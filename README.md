@@ -1,5 +1,5 @@
 # Medialogi-P3-02
-3rd semester medialogy project
+3rd semester Medialogy project
 
 "How can we make a training assistant program which counts a given exercise the user has performed, with minimal equipment requirements using computer vision?"
 
