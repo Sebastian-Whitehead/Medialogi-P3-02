@@ -21,10 +21,13 @@ while True:
 
     # Image handling on "frame"
     frame = ip.cvtColor(frame, 'rgb')
-    frame = ip.tresholdStretching(frame)
+    #frame = ip.tresholdStretching(frame)
+
+    # Mask color
+    maskedFrame = ip.threshold(frame, (20, 0, 0), (52, 9, 30), (89, 191, 255)) # Mask green color
 
     # Display the resulting frame
-    cv2.imshow('frame', frame)
+    cv2.imshow('frame', maskedFrame)
     if cv2.waitKey(1) == ord('q'):
         break
 
