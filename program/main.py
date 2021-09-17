@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import imageHandling as ih
+import imageProcessing as ip
 
 # https://docs.opencv.org/4.5.1/dd/d43/tutorial_py_video_display.html
 
@@ -19,8 +19,9 @@ while True:
         print("Can't receive frame (stream end?). Exiting ...")
         break
 
-    # Image handling
-    frame = ih.cvtColor(frame, 'rgb')
+    # Image handling on "frame"
+    frame = ip.cvtColor(frame, 'rgb')
+    frame = ip.tresholdStretching(frame)
 
     # Display the resulting frame
     cv2.imshow('frame', frame)

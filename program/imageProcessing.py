@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 def cvtColor(frame, colScale):
     # Our operations on the frame come here
@@ -15,3 +16,14 @@ def cvtColor(frame, colScale):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
 
     return frame
+
+def tresholdStretching(frame):
+    optimizedFrame = frame.copy()
+    min = np.min(frame)
+    max = np.max(frame)
+
+    for x, rows in enumerate(frame):
+        for y, cols in enumerate(rows):
+            optimizedFrame[x][y] = 255/(max - min) * (frame[x][y] - min)
+
+    return optimizedFrame
