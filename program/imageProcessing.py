@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def cvtColor(frame, colScale):
+def cvtColor(frame: np.ndarray, colScale: str) -> np.ndarray:
     # Our operations on the frame come here
     colScale = colScale.lower()
     if colScale == 'rgb' or colScale == 'bgr':
@@ -17,7 +17,7 @@ def cvtColor(frame, colScale):
 
     return frame
 
-def thresholdStretching(frame):
+def thresholdStretching(frame: np.ndarray) -> np.ndarray:
     optimizedFrame = frame.copy()
     min = np.min(frame)
     max = np.max(frame)
@@ -28,7 +28,7 @@ def thresholdStretching(frame):
 
     return optimizedFrame
 
-def threshold(img, offset, lower, upper):
+def threshold(img: np.ndarray, offset: float, lower: tuple, upper: tuple) -> np.ndarray:
     # convert to hsv
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, np.subtract(lower, offset), np.add(upper, offset))

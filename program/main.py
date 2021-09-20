@@ -1,5 +1,4 @@
 import numpy as np
-from PIL import ImageFont, ImageDraw, Image
 import cv2
 import imageProcessing as IP
 
@@ -14,7 +13,7 @@ if cap.isOpened():
     frameWidth = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float width
     frameHeight = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)  # float height
     frameFps = cap.get(cv2.CAP_PROP_FPS) # float fps
-
+    print('Camera connected:')
     print('Dim:', frameWidth, 'x', frameHeight, 'fps:', frameFps)
 
 while True:
@@ -23,7 +22,7 @@ while True:
 
     # if frame is read correctly ret is True
     if not ret:
-        print("Can't receive frame (stream end?). Exiting ...")
+        print("Can't receive frame. Exiting ...")
         break
 
     # Image handling on "frame"
