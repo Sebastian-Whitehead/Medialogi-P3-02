@@ -17,7 +17,7 @@ def cvtColor(frame, colScale):
 
     return frame
 
-def tresholdStretching(frame):
+def thresholdStretching(frame):
     optimizedFrame = frame.copy()
     min = np.min(frame)
     max = np.max(frame)
@@ -29,11 +29,11 @@ def tresholdStretching(frame):
     return optimizedFrame
 
 def threshold(img, offset, lower, upper):
-    ## convert to hsv
+    # convert to hsv
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, np.subtract(lower, offset), np.add(upper, offset))
 
-    ## slice the color
+    # slice the color
     imask = mask > 0
     maskedImg = np.zeros_like(img, np.uint8)
     maskedImg[imask] = img[imask]
