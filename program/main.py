@@ -26,15 +26,17 @@ while True:
         break
 
     # Image handling on "frame"
-    frame = IP.cvtColor(frame, 'rgb')
+    frame = cv2.flip(frame, 1)
+    #frame = IP.cvtColor(frame, 'rgb')
     #frame = IP.thresholdStretching(frame)
-    #frame = IP.threshold(frame, (20, 0, 0), (52, 9, 30), (89, 191, 255)) # Mask green color
+    #frame = IP.threshold(frame, (20, 0, 0), (59-10, 57, 36), (106, 132, 253)) # Mask green gloves
 
     # Write counter on image
     feedbackText = 'Count: ' + str(0)
-    textPosition, fontFace, fontScale, fontColor, thickness = (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 0, 0), 1
-    #textPosition -= cv2.getTextSize(feedbackText, fontFace, fontScale, thickness)
-    frame = cv2.putText(frame, feedbackText, textPosition, fontFace, fontScale, (0, 0, 0), thickness, cv2.LINE_AA)
+    textPosition, fontFace, fontScale, fontColor, thickness = (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 0, 0), 2
+    frame = cv2.putText(frame, feedbackText, textPosition, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)
+    textPosition, fontFace, fontScale, fontColor, thickness = (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1.5, (255, 255, 255), 1
+    frame = cv2.putText(frame, feedbackText, textPosition, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)
 
     # Display the resulting frame
     cv2.imshow('frame', frame)
