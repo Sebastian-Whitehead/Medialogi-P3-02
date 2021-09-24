@@ -82,12 +82,13 @@ def blobDetection2(frame, originalFrame):
 def testCode(window_name):
     originalFrame = cv2.imread('../handskerBillede.png', cv2.IMREAD_UNCHANGED)
     height, width, channels = originalFrame.shape
+    imageProcess = originalFrame.copy()
 
     # LOWER RESOLUTION
-    originalFrameBlured = cv2.GaussianBlur(originalFrame, (7, 7), 0)
-    greenGloveMask = IP.threshold(originalFrameBlured, (0, 0, 0), (48, 30, 104), (78, 122, 255))  # Mask green gloves
-    greenGloveMask = cv2.cvtColor(greenGloveMask, cv2.COLOR_BGR2GRAY)
-    originalFrame = blobDetection2(greenGloveMask, originalFrame)
+    imageProcess = cv2.GaussianBlur(imageProcess, (7, 7), 0)
+    imageProcess = IP.threshold(imageProcess, (0, 0, 0), (48, 30, 104), (78, 122, 255))  # Mask green gloves
+    imageProcess = cv2.cvtColor(imageProcess, cv2.COLOR_BGR2GRAY)
+    originalFrame = blobDetection2(imageProcess, originalFrame)
     cv2.imshow(window_name, originalFrame)
     cv2.waitKey(0)
 
