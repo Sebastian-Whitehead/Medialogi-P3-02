@@ -31,11 +31,9 @@ def mergeBlobs(blobs):
                     blobs.remove(blob1)
     return blobs
 
-
 def show(blobs, originalFrame, frame):
     for blob in blobs:
-        detectedImage = cv2.rectangle(originalFrame.copy(), (blob.x, blob.y), (blob.x + blob.w, blob.y + blob.h),
-                                      (0, 0, 255), 1)
+        detectedImage = cv2.rectangle(originalFrame.copy(), (blob.x, blob.y), (blob.x + blob.w, blob.y + blob.h), (0, 0, 255), 1)
         cv2.imshow('originalFrame', detectedImage)
         cv2.waitKey(5)
 
@@ -43,13 +41,14 @@ def blobDetection2(frame, originalFrame):
     blobs = []
     for y, row in enumerate(frame):
         # print(y, ':', len(frame))
+
         # if 0 >= sum(row): # Skips row if all black (Makes it slower??)
             # continue
-        show(blobs, originalFrame, frame)
+        #show(blobs, originalFrame, frame)
         for x, pixel in enumerate(row):
             # if 0 >= sum(row[x:]): # Skips rest of black pixels in row (Makes it slower??)
                 # continue
-            # originalFrame[y][x] = 0
+            #originalFrame[y][x] = 0
             if 0 < pixel:
                 blobFound = False
                 for blob in blobs:
@@ -74,10 +73,8 @@ def blobDetection2(frame, originalFrame):
         blobs = mergeBlobs(blobs)
     detectedImage = originalFrame.copy()
     for blob in blobs:
-        detectedImage = cv2.rectangle(detectedImage, (blob.x, blob.y), (blob.x + blob.w, blob.y + blob.h), (0, 0, 255),
-                                      1)
+        detectedImage = cv2.rectangle(detectedImage, (blob.x, blob.y), (blob.x + blob.w, blob.y + blob.h), (0, 0, 255), 1)
     return detectedImage
-
 
 def testCode(window_name):
     originalFrame = cv2.imread('../handskerBillede.png', cv2.IMREAD_UNCHANGED)
@@ -88,7 +85,10 @@ def testCode(window_name):
     imageProcess = cv2.GaussianBlur(imageProcess, (7, 7), 0)
     imageProcess = IP.threshold(imageProcess, (0, 0, 0), (48, 30, 104), (78, 122, 255))  # Mask green gloves
     imageProcess = cv2.cvtColor(imageProcess, cv2.COLOR_BGR2GRAY)
-    originalFrame = blobDetection2(imageProcess, originalFrame)
+    cv2.imshow('Color mask', imageProcess)
+    edges = cv2.Canny(image=imageProcess, threshold1=100, threshold2=200)  # Canny Edge Detection
+    cv2.imshow('Edges', edges)
+    originalFrame = blobDetection2(edges, originalFrame)
     cv2.imshow(window_name, originalFrame)
     cv2.waitKey(0)
 
