@@ -1,8 +1,7 @@
 import numpy as np
 import cv2
 import imageProcessing as IP
-from Blob import Blob
-from Blob import blobDetection
+from imageProcessing.colorDetection import colorDetection as colorDetection
 
 window_name = 'Training Assistent Computer'
 cap = cv2.VideoCapture(0)
@@ -60,12 +59,14 @@ while True:
         print("Can't receive frame. Exiting ...")
         break
 
-    frames = imageProcessing(originalFrame, frameCopy)
-    originalFrame = frames['originalFrame']
-    frame = frameCopy
+    #frames = imageProcessing(originalFrame, frameCopy)
+    #originalFrame = frames['originalFrame']
+    #frame = frameCopy
+    frames = {}
 
     # print(blob.name)
-    frame = cv2.rectangle(frame, (100, 100), (200, 150), (0, 0, 255), 1)
+    frames['colorDetected'] = colorDetection(originalFrame, 7, (0, 0, 0), (48, 30, 104), (78, 122, 255), 'greenGlove')
+    #frame = cv2.rectangle(frame, (100, 100), (200, 150), (0, 0, 255), 1)
 
     # Write counter on image
     feedbackText = 'Count: ' + str(0)
@@ -76,7 +77,7 @@ while True:
 
     # Display the resulting frame
    # cv2.imshow(window_name, frame)
-    cv2.imshow(window_name, frames['blured'])
+    cv2.imshow(window_name, frames['colorDetected'])
     if cv2.waitKey(1) == ord('q'):
         break
 
