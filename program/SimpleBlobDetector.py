@@ -30,7 +30,22 @@ def SimpleBlobDetector(image, lower, upper):
     # Filter only the edges of image
     # image = cv2.Canny(image, 100, 200)
     # Morph image
-    # ------------------------------
+    kernel = np.ones((5, 5), np.uint8)
+    image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+
+    th, im_th = cv2.threshold(image, 220, 255, cv2.THRESH_BINARY_INV);
+    # Copy the thresholded image.
+    im_floodfill = im_th.copy()
+    # Mask used to flood filling.
+    # Notice the size needs to be 2 pixels than the image.
+    h, w = im_th.shape[:2]
+    mask = np.zeros((h + 2, w + 2), np.uint8)
+    # Floodfill from point (0, 0)
+    cv2.floodFill(im_floodfill, mask, (0, 0), 255)
+    # Invert floodfilled image
+    im_floodfill_inv = cv2.bitwise_not(im_floodfill)
+    # Combine the two images to get the foreground.
+    image = im_th | im_floodfill_inv
 
     # Show processed image
     cv2.imshow('Processed image', image)
@@ -40,10 +55,9 @@ def SimpleBlobDetector(image, lower, upper):
 
     # Blob detector - parameters
     params.filterByColor = False
-    params.minThreshold = 10
-    params.maxThreshold = 30
-    params.blobColor = 0
-    params.minArea = 100
+    params.minThreshold = 0
+    params.maxThreshold = 255
+    params.minArea = 10
     params.maxArea = 500000
     params.filterByCircularity = False
     params.filterByConvexity = False
