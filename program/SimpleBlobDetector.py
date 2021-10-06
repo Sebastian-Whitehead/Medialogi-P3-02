@@ -1,21 +1,9 @@
 import cv2
 import numpy as np
+from ColorMask import colorMask
 
+def processImage(image, lower, upper):
 
-def colorMask(img: np.ndarray, lower: tuple, upper: tuple) -> np.ndarray:
-    # Convert to hsv
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, lower, upper)
-
-    # Slice the color
-    imask = mask > 0
-    maskedImg = np.zeros_like(img, np.uint8)
-    maskedImg[imask] = img[imask]
-
-    return maskedImg
-
-
-def SimpleBlobDetector(image, lower, upper):
     # Process image
     # Make a copy of the image
     originalImage = image.copy()
@@ -50,6 +38,11 @@ def SimpleBlobDetector(image, lower, upper):
     # Show processed image
     cv2.imshow('Processed image', image)
 
+    return image
+
+
+def SimpleBlobDetector(originalImage, processedImage):
+
     # Blob detector
     params = cv2.SimpleBlobDetector_Params()
 
@@ -67,10 +60,10 @@ def SimpleBlobDetector(image, lower, upper):
     # Create a detector with the parameters
     detector = cv2.SimpleBlobDetector_create(params)
     # Detect blobs
-    keypoints = detector.detect(image)
+    keypoints = detector.detect(processedImage)
     # Draw blobs on our image as red circles
     blobs = cv2.drawKeypoints(originalImage, keypoints, 0, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    print("Number of Circular Blobs: " + str(len(keypoints)))
+    print("Number of Circular Blobs:", str(len(keypoints)), str(str(len(keypoints) == 6)))
 
     cv2.imshow('SimpleBlobDetector', blobs)
 
