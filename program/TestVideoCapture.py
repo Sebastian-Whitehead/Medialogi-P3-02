@@ -65,7 +65,7 @@ def main():
         upperThresh = cv2.getTrackbarPos('Upper threshold', window_name)
 
         # blobDetection('pic', cv2.imread('TestImages/Gloves1.png'), 9, (48, 30, 104), (78, 122, 255), 'greenGlove', 1)
-        SimpleBlobDetectorManual(cv2.imread('../TestImages/Gloves1.png'), (48, 30, 104), (78, 122, 255))
+        SimpleBlobDetectorManual(cv2.imread('TestImages/Gloves1.png'), (48, 30, 104), (78, 122, 255))
 
 
 if __name__ == '__main__':

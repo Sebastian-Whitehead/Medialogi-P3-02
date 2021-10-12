@@ -1,11 +1,14 @@
-from ColorDetectionMethods.connectedComponentsMethod import *
-from ColorDetectionMethods.SelfmadeBlobDetection import *
-from ColorDetectionMethods.SimpleBlobDetector import *
+from connectedComponentsMethod import *
+from SelfmadeBlobDetection import *
+from SimpleBlobDetector import *
+from MotionDetection import motion_detection
+
 
 # For handling the sliders.
 # This should stay as it is ..
 def nothing(x):
     pass
+
 
 # Main function running the live video from standard camera in users computer
 # Running image processing and movement and/or color detection.
@@ -68,6 +71,7 @@ def main():
         # blobDetectionManual(frameCopy, lower, upper)
         SimpleBlobDetectorManual(frameCopy, lower, upper)
         connectedComponentsMethodManual(frameCopy, lower, upper)
+        #motion_detection(cap)
 
         # Write counter on image
         # Get counter text
