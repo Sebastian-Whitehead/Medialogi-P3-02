@@ -1,86 +1,93 @@
-import numpy as np
 import cv2
-import imageProcessing as IP
-from imageProcessing.colorDetection import colorDetection as colorDetection
+from connectedComponentsMethod import *
+from SelfmadeBlobDetection import *
+from SimpleBlobDetector import *
 
-window_name = 'Training Assistent Computer'
-cap = cv2.VideoCapture(0)
 
 def nothing(x):
     pass
 
-if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
-else:
-    # get vcap property
-    frameWidth = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float width
-    frameHeight = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)  # float height
-    frameFps = cap.get(cv2.CAP_PROP_FPS) # float fps
-    print('Camera connected:')
-    print('Dim:', frameWidth, 'x', frameHeight, 'fps:', frameFps)
 
-cv2.namedWindow(window_name)
-cv2.createTrackbar('Lower threshold', window_name, 1, 10, nothing)
-cv2.createTrackbar('Upper threshold', window_name, 1, 10, nothing)
+def main():
+    # Name of window name pop-up
+    window_name = 'Training Assistent Computer'
 
-def imageProcessing(originalFrame, frameCopy):
-    frames = {'originalFrame': originalFrame, 'frameCopy': frameCopy}
+    # Get video data
+    cap = cv2.VideoCapture(0)
 
-    # Getting input from sliders
-    lowerThresh = cv2.getTrackbarPos('Lower threshold', window_name)
-    upperThresh = cv2.getTrackbarPos('Upper threshold', window_name)
+    # Check if the camera is open on the users computer
+    if not cap.isOpened():
+        print("Cannot open camera")
+        # Exit program on error
+        exit()
+    else:
+        # Get vcap property
+        frameWidth = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float width
+        frameHeight = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)  # float height
+        frameFps = cap.get(cv2.CAP_PROP_FPS)  # float fps
 
-    #frame = IP.cvtColor(frame, 'rgb')
-    frames['blured'] = cv2.GaussianBlur(frameCopy, (3, 3), 0)
-    #frame = IP.thresholdStretching(frame)
+        # Print camera information
+        print('Camera connected:')
+        print('Dim:', frameWidth, 'x', frameHeight, 'fps:', frameFps)
 
-    originalFrameBlured = cv2.GaussianBlur(originalFrame, (7, 7), 0)
-    frames['greenGloveMask'] = IP.threshold(originalFrameBlured, (0, 0, 0), (48, 30, 104), (78, 122, 255)) # Mask green gloves
-    frames['greenGloveMask'] = cv2.cvtColor(frames['greenGloveMask'], cv2.COLOR_BGR2GRAY)
-    #originalFrame = blobDetection(frames['greenGloveMask'], originalFrame)
+    # Make and append slider to window frame
+    cv2.namedWindow(window_name)
+    cv2.createTrackbar('Lower threshold', window_name, 1, 10, nothing)
+    cv2.createTrackbar('Upper threshold', window_name, 1, 10, nothing)
 
-    frames['edges'] = cv2.Canny(image=originalFrame, threshold1=100, threshold2=200)  # Canny Edge Detection
+    # Run video
+    while True:
+        # Capture frame-by-frame
+        ret, originalFrame = cap.read()
 
-    # Show all available frames
-    if False:
-        for frame in frames:
-            cv2.imshow(frame, frames[frame])
-    return frames
+        # Flip frame to make it seem like a mirror
+        originalFrame = cv2.flip(originalFrame, 1)
 
-while True:
-    # Capture frame-by-frame
-    ret, originalFrame = cap.read()
-    originalFrame = cv2.flip(originalFrame, 1)
-    frameCopy = originalFrame.copy()
+        # Make a copy of the originalFrame
+        frameCopy = originalFrame.copy()
 
-    # if frame is read correctly ret is True
-    if not ret:
-        print("Can't receive frame. Exiting ...")
-        break
+        # if frame is read correctly ret is True
+        if not ret:
+            print("Can't receive frame. Exiting ...")
+            break
 
-    #frames = imageProcessing(originalFrame, frameCopy)
-    #originalFrame = frames['originalFrame']
-    #frame = frameCopy
-    frames = {}
+        # Manual color thresholding
+        # Manual Thresholding 1
+        lower = (48, 30, 104)
+        upper = (78, 122, 255)
+        # Manual Thresholding 2
+        lower = (53, 74, 68)
+        upper = (121, 255, 255)
 
-    # print(blob.name)
-    frames['colorDetected'] = colorDetection(originalFrame, 7, (0, 0, 0), (48, 30, 104), (78, 122, 255), 'greenGlove')
-    #frame = cv2.rectangle(frame, (100, 100), (200, 150), (0, 0, 255), 1)
+        # Color Selector type to automatic color masking
+        colSelector = 'greenGlove'
 
-    # Write counter on image
-    feedbackText = 'Count: ' + str(0)
-    textPosition, fontFace, fontScale, fontColor, thickness = (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 0, 0), 2
-    frame = cv2.putText(frame, feedbackText, textPosition, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)
-    textPosition, fontFace, fontScale, fontColor, thickness = (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1.5, (255, 255, 255), 1
-    frame = cv2.putText(frame, feedbackText, textPosition, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)
+        # Pick which blob detector method to use
+        # blobDetectionManual(frameCopy, lower, upper)
+        SimpleBlobDetectorManual(frameCopy, lower, upper)
+        connectedComponentsMethodManual(frameCopy, lower, upper)
 
-    # Display the resulting frame
-   # cv2.imshow(window_name, frame)
-    cv2.imshow(window_name, frames['colorDetected'])
-    if cv2.waitKey(1) == ord('q'):
-        break
+        # Write counter on image
+        # Get counter text
+        feedbackText = 'Count: ' + str(0)
+        # Make new attributes for background of the text
+        textPosition, fontFace, fontScale, fontColor, thickness = (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 0, 0), 2
+        # Write the background of the text on frame
+        cv2.putText(frameCopy, feedbackText, textPosition, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)
+        # Change attributes to front view of text
+        fontColor, thickness = (255, 255, 255), 1
+        # Write front view of text on frame
+        cv2.putText(frameCopy, feedbackText, textPosition, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)
 
-# When everything done, release the capture
-frame.release()
-cv2.destroyAllWindows()
+        # Display the resulting frame
+        cv2.imshow(window_name, frameCopy)
+        if cv2.waitKey(15) == ord('q'):
+            break
+
+    # When everything done, release the capture
+    originalFrame.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,7 +1,7 @@
 import cv2
-import imageProcessing as IP
+#import imageProcessing as IP
 import math
-
+from ColorMask import *
 
 class Blob:
     def __init__(self, x, y):
@@ -23,7 +23,10 @@ def mergeBlobs(blobs):
     for blob1 in list(blobs):
         for blob2 in list(blobs):
             if blob1 is not blob2:
-                if blob1.x - Blob.blobThreshold < blob2.x + blob2.w and blob1.x + blob1.w + Blob.blobThreshold > blob2.x and blob1.y - Blob.blobThreshold < blob2.y + blob2.h and blob1.h + blob1.y + Blob.blobThreshold > blob2.y:
+                if (blob1.x - Blob.blobThreshold < blob2.x + blob2.w and
+                        blob1.x + blob1.w + Blob.blobThreshold > blob2.x and
+                        blob1.y - Blob.blobThreshold < blob2.y + blob2.h and
+                        blob1.h + blob1.y + Blob.blobThreshold > blob2.y):
                     blob2.x = min(blob1.x, blob2.x)
                     blob2.w = max(blob1.w, blob2.w)
                     blob2.y = min(blob1.y, blob2.y)
@@ -31,24 +34,46 @@ def mergeBlobs(blobs):
                     blobs.remove(blob1)
     return blobs
 
-def show(blobs, originalFrame, frame):
+
+def show(blobs, originalFrame):
+    detectedImage = originalFrame.copy()
+
     for blob in blobs:
-        detectedImage = cv2.rectangle(originalFrame.copy(), (blob.x, blob.y), (blob.x + blob.w, blob.y + blob.h), (0, 0, 255), 1)
+        startPos = (blob.x, blob.y)
+        endPos = (blob.x + blob.w, blob.y + blob.h)
+        color = (0, 0, 255)
+        borderWidth = 1
+        detectedImage = cv2.rectangle(detectedImage, startPos, endPos, color, borderWidth)
         cv2.imshow('originalFrame', detectedImage)
         cv2.waitKey(5)
 
-def blobDetection2(frame, originalFrame):
+
+def blobDetectionManual(originalFrame, lower, upper):
+
+    processedImage = colorMaskManual(originalFrame, lower, upper)
+    return blobDetectionContinue(processedImage, originalFrame)
+
+def blobDetectionAuto(originalFrame, type: str):
+
+    processedImage = colorMaskAuto(originalFrame, type)
+    return blobDetectionContinue(processedImage, originalFrame)
+
+def blobDetectionContinue(processedImage, originalFrame):
+
     blobs = []
-    for y, row in enumerate(frame):
+    for y, row in enumerate(processedImage):
         # print(y, ':', len(frame))
 
         # if 0 >= sum(row): # Skips row if all black (Makes it slower??)
-            # continue
-        #show(blobs, originalFrame, frame)
+        # continue
+
+        # Show blobs being found in as "animation"
+        # show(blobs, originalFrame)
+
         for x, pixel in enumerate(row):
             # if 0 >= sum(row[x:]): # Skips rest of black pixels in row (Makes it slower??)
-                # continue
-            #originalFrame[y][x] = 0
+            # continue
+            # originalFrame[y][x] = 0
             if 0 < pixel:
                 blobFound = False
                 for blob in blobs:
@@ -68,29 +93,20 @@ def blobDetection2(frame, originalFrame):
                 if not blobFound:
                     blob = Blob(x, y)
                     blobs.append(blob)
+
     # Blobs merge on overlap
-    if 1 < len(blobs):
-        blobs = mergeBlobs(blobs)
-    detectedImage = originalFrame.copy()
-    for blob in blobs:
-        detectedImage = cv2.rectangle(detectedImage, (blob.x, blob.y), (blob.x + blob.w, blob.y + blob.h), (0, 0, 255), 1)
-    return detectedImage
+    if 1 < len(blobs): blobs = mergeBlobs(blobs)
 
-def testCode(window_name):
-    originalFrame = cv2.imread('../handskerBillede.png', cv2.IMREAD_UNCHANGED)
-    height, width, channels = originalFrame.shape
-    imageProcess = originalFrame.copy()
+    show(blobs, originalFrame)
 
-    # LOWER RESOLUTION
-    imageProcess = cv2.GaussianBlur(imageProcess, (7, 7), 0)
-    imageProcess = IP.threshold(imageProcess, (0, 0, 0), (48, 30, 104), (78, 122, 255))  # Mask green gloves
-    imageProcess = cv2.cvtColor(imageProcess, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('Color mask', imageProcess)
-    edges = cv2.Canny(image=imageProcess, threshold1=100, threshold2=200)  # Canny Edge Detection
-    cv2.imshow('Edges', edges)
-    originalFrame = blobDetection2(edges, originalFrame)
-    cv2.imshow(window_name, originalFrame)
+    return blobs
+
+
+def main(window_name):
+    originalFrame = cv2.imread('TestImages/handskerBillede.png', cv2.IMREAD_UNCHANGED)
+    blobs = blobDetectionManual(originalFrame, (48, 30, 104), (78, 122, 255))
     cv2.waitKey(0)
 
 
-testCode('colorDetection')
+if __name__ == '__main__':
+    main('colorDetection')

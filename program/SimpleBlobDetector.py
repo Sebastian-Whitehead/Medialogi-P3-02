@@ -1,47 +1,16 @@
 import cv2
-import numpy as np
-from ColorMask import colorMask
+from ColorMask import *
 
-def processImage(image, lower, upper):
+def SimpleBlobDetectorManual(originalImage: np.ndarray, lower: tuple, upper: tuple):
 
-    # Process image
-    # Make a copy of the image
-    originalImage = image.copy()
-    # Threshold image with color
-    image = colorMask(image, lower, upper)
-    # Image to grayscale
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # Convert image to binary
-    (thresh, image) = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    # Invert image
-    image = cv2.bitwise_not(image)
-    # Filter only the edges of image
-    # image = cv2.Canny(image, 100, 200)
-    # Morph image
-    kernel = np.ones((5, 5), np.uint8)
-    image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+    processedImage = colorMaskManual(originalImage, lower, upper)
+    return SimpleBlobDetectorContinue(originalImage, processedImage)
 
-    th, im_th = cv2.threshold(image, 220, 255, cv2.THRESH_BINARY_INV);
-    # Copy the thresholded image.
-    im_floodfill = im_th.copy()
-    # Mask used to flood filling.
-    # Notice the size needs to be 2 pixels than the image.
-    h, w = im_th.shape[:2]
-    mask = np.zeros((h + 2, w + 2), np.uint8)
-    # Floodfill from point (0, 0)
-    cv2.floodFill(im_floodfill, mask, (0, 0), 255)
-    # Invert floodfilled image
-    im_floodfill_inv = cv2.bitwise_not(im_floodfill)
-    # Combine the two images to get the foreground.
-    image = im_th | im_floodfill_inv
+def SimpleBlobDetectorAuto(originalImage: np.ndarray, colSelector: str):
+    processedImage = colorMaskAuto(originalImage, colSelector)
+    return SimpleBlobDetectorContinue(originalImage, processedImage)
 
-    # Show processed image
-    cv2.imshow('Processed image', image)
-
-    return image
-
-
-def SimpleBlobDetector(originalImage, processedImage):
+def SimpleBlobDetectorContinue(originalImage: np.ndarray, processedImage: np.ndarray):
 
     # Blob detector
     params = cv2.SimpleBlobDetector_Params()
@@ -63,7 +32,6 @@ def SimpleBlobDetector(originalImage, processedImage):
     keypoints = detector.detect(processedImage)
     # Draw blobs on our image as red circles
     blobs = cv2.drawKeypoints(originalImage, keypoints, 0, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    print("Number of Circular Blobs:", str(len(keypoints)), str(str(len(keypoints) == 6)))
 
     cv2.imshow('SimpleBlobDetector', blobs)
 

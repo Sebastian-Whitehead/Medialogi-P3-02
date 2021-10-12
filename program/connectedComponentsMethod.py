@@ -1,11 +1,22 @@
 import cv2
 import numpy as np
+from ColorMask import *
 
-def connectedComponentsMethod(originalImage, processedImage):
 
-    #gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def connectedComponentsMethodManual(originalImage: np.ndarray, lower: tuple, upper: tuple):
+    processedImage = colorMaskManual(originalImage, lower, upper)
+    return connectedComponentsMethodContinue(originalImage, processedImage)
 
-    #binaryImage = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)[1]
+
+def connectedComponentsMethodAuto(originalImage: np.ndarray, colSelector: str):
+    processImage = colorMaskAuto(originalImage, colSelector)
+    return connectedComponentsMethodContinue(originalImage, processImage)
+
+
+def connectedComponentsMethodContinue(originalImage: np.ndarray, processedImage: np.ndarray):
+    # gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # binaryImage = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)[1]
     num_labels, labels = cv2.connectedComponents(processedImage)
 
     label_hue = np.uint8(179 * labels / np.max(labels))
@@ -20,7 +31,7 @@ def connectedComponentsMethod(originalImage, processedImage):
 
     blobs = []
     for n in range(1, num_labels):
-        nonZeroX, nonZeroY = np.where(labels[:,:] == n)
+        nonZeroX, nonZeroY = np.where(labels[:, :] == n)
 
         x, y = min(nonZeroY), min(nonZeroX)
         w, h = max(nonZeroY) - x, max(nonZeroX) - y
@@ -28,7 +39,8 @@ def connectedComponentsMethod(originalImage, processedImage):
         blobs.append((x, y, w, h))
 
     for blob in blobs:
-        originalImage = cv2.rectangle(originalImage, (blob[0], blob[1]), (blob[0] + blob[2], blob[1] + blob[3]), (0, 0, 255), 1)
+        originalImage = cv2.rectangle(originalImage, (blob[0], blob[1]), (blob[0] + blob[2], blob[1] + blob[3]),
+                                      (0, 0, 255), 1)
 
     cv2.imshow('ConnectedComponentsMethod', originalImage)
 
