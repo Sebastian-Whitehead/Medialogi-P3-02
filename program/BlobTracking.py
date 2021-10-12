@@ -1,6 +1,6 @@
 from math import sqrt
 
-def BlobTracking(prevBlobs, curBlobs):
+def BlobTracking(prevBlobs: dict, curBlobs: [float]) -> dict:
 
     # Make a dict for the next blobs
     nextBlobs = {}
@@ -35,7 +35,7 @@ def BlobTracking(prevBlobs, curBlobs):
 
 # Calculate the coordination for the middle of the blob
 # Using ((x1,y2),(x2,y2)) (NOT ((x,y),(w,h)))
-def getMiddle(blob):
+def getMiddle(blob: [float]) -> [float]:
     # Calculate x-coordination of the middle
     xMiddle = blob[0] + (blob[2] - blob[0]) / 2
     # Calculate y-coordination of the middle
@@ -46,7 +46,7 @@ def getMiddle(blob):
     return middle
 
 # Calculate the distance between two points in 2D space
-def getDistance(p1, p2):
+def getDistance(p1: [float], p2: [float]) -> float:
     # Calculate the x coordinate
     x = float(p2[0]) - float(p1[0])
     # Calculate the y coordinate
