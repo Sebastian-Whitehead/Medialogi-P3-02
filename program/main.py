@@ -3,7 +3,6 @@ from SelfmadeBlobDetection import *
 from SimpleBlobDetector import *
 from MotionDetection import motion_detection
 
-
 # For handling the sliders.
 # This should stay as it is ..
 def nothing(x):
