@@ -1,13 +1,15 @@
-import cv2
-from connectedComponentsMethod import *
-from SelfmadeBlobDetection import *
-from SimpleBlobDetector import *
+from ColorDetectionMethods.connectedComponentsMethod import *
+from ColorDetectionMethods.SelfmadeBlobDetection import *
+from ColorDetectionMethods.SimpleBlobDetector import *
 
-
+# For handling the sliders.
+# This should stay as it is ..
 def nothing(x):
     pass
 
-
+# Main function running the live video from standard camera in users computer
+# Running image processing and movement and/or color detection.
+# Counts the amount of squats made by the user and shows it in the display.
 def main():
     # Name of window name pop-up
     window_name = 'Training Assistent Computer'

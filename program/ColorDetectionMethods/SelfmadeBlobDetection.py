@@ -103,7 +103,7 @@ def blobDetectionContinue(processedImage, originalFrame):
 
 
 def main(window_name):
-    originalFrame = cv2.imread('TestImages/handskerBillede.png', cv2.IMREAD_UNCHANGED)
+    originalFrame = cv2.imread('../TestImages/handskerBillede.png', cv2.IMREAD_UNCHANGED)
     blobs = blobDetectionManual(originalFrame, (48, 30, 104), (78, 122, 255))
     cv2.waitKey(0)
 
