@@ -1,11 +1,14 @@
 import cv2
 import numpy as np
 from SimpleBlobDetector import *
-from connectedComponentsMethod import *
+from connectedComponentsMethod import ConnectedComponentMethod
 from SelfmadeBlobDetection import *
+from BlobTracking import BlobTracking
 
+def nothing(value):
+    pass
 
-def videoTest():
+def videoTest(trackingMethod):
     # Video to test
     cap = cv2.VideoCapture('TestImages/greensmall.mp4')
 
@@ -32,10 +35,12 @@ def videoTest():
         # Color Selector type
         colSelector = 'greenGlove'
 
+
         # Pick which blob detector method to use
         #blobDetectionManual(frame, lower, upper)
-        SimpleBlobDetectorManual(frame, lower, upper)
-        connectedComponentsMethodManual(frame, lower, upper)
+        #SimpleBlobDetectorManual(frame, lower, upper)
+        #connectedComponentsMethodManual(frame, lower, upper)
+        trackingMethod.runManualMethod(frame, lower, upper)
 
         # Wait ms to simulate framerate
         if cv2.waitKey(15) & 0xFF == ord('q'):
@@ -47,22 +52,24 @@ def videoTest():
     cv2.destroyAllWindows()
 
 
-def nothing(value):
-    pass
 
 
 def main():
-    window_name = 'Window'
+    """
     cv2.namedWindow(window_name)
     cv2.createTrackbar('Lower threshold', window_name, 1, 255, nothing)
     cv2.createTrackbar('Upper threshold', window_name, 1, 255, nothing)
+    """
 
-    videoTest()
+    CCM = ConnectedComponentMethod()
+    videoTest(CCM)
 
     while True:
         # Getting input from sliders
+        """
         lowerThresh = cv2.getTrackbarPos('Lower threshold', window_name)
         upperThresh = cv2.getTrackbarPos('Upper threshold', window_name)
+        """
 
         # blobDetection('pic', cv2.imread('TestImages/Gloves1.png'), 9, (48, 30, 104), (78, 122, 255), 'greenGlove', 1)
         SimpleBlobDetectorManual(cv2.imread('TestImages/Gloves1.png'), (48, 30, 104), (78, 122, 255))

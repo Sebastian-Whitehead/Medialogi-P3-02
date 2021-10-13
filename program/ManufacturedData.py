@@ -24,20 +24,15 @@ class ManufacturedData:
         with open(self.dataPath) as json_file:
             if json_file:
                 self.blobs = json.load(json_file)
-                self.startBlobs = {}
-                """
-                self.startBlobs = {
-                    'head': [156, 70, 213, 133],\
-                    'r_hand': [133, 249, 178, 279],\
-                    'l_hand': [183, 243, 235, 277],\
-                    'waist': [140, 286, 247, 310],\
-                    'r_foot': [125, 481, 155, 520],\
-                    'l_foot': [215, 481, 243, 519]
-                }
-                """
 
                 print('Loaded: ', self.blobs)
                 print('')
+
+        self.blobTracking = BlobTracking(
+            window_name=self.window_name,
+            collisionType='corners',
+            addBlobClick=2
+        )
 
         cv2.namedWindow(self.window_name)
         cv2.setMouseCallback(self.window_name, self.click_event)
@@ -75,18 +70,7 @@ class ManufacturedData:
             with open(self.dataPath, 'w') as outfile:
                 json.dump(self.blobs, outfile)
 
-        # Set label of blob
-        elif flags == 2: # (Right click)
-            for i, blob in enumerate(self.blobs[self.frame]):
-                if (blob[0] < x and
-                    blob[1] < y and
-                    blob[2] > x and
-                    blob[3] > y):
-                    size = len(self.startBlobs)
-                    self.startBlobs['label' + str(size)] = blob
-                    print('Label', size, 'made at', blob)
-
-
+            print('Blobs on frame', self.frame, 'deleted..')
 
     # Run video
     def run(self):
@@ -95,9 +79,8 @@ class ManufacturedData:
         while (self.frame <= self.endFrame and self.cropped) or (self.frame <= self.length - 1 and not self.cropped):
             #print('Frame:', self.frame)
 
-            # Find the the buddy for the labels in this frame
-            if self.frame - 1 > 0:
-                    self.startBlobs = BlobTracking(self.startBlobs, self.blobs[self.frame])
+            # Run blob tracking
+            self.blobTracking.run(self.blobs[self.frame], self.media)
 
             # Draw rectangles for all blobs in this frame
             for blob in self.blobs[self.frame]:
@@ -107,24 +90,6 @@ class ManufacturedData:
                 # End coordination of the rectangle
                 endPos = (blob[2], blob[3])
                 cv2.rectangle(self.media, startPos, endPos, (0, 0, 255), 1)
-
-                if len(self.startBlobs) > 0:
-                    # Get the similar values for the labels
-                    values = list(self.startBlobs.values())
-                    # Get the labels from start blobs given
-                    labels = list(self.startBlobs.keys())
-
-                    # Write label on blob
-                    # Get the index of the current label
-                    if blob in values:
-                        labelIndex = values.index(blob)
-                        # Get the label using the index
-                        feedbackText = labels[labelIndex]
-                        # Make new attributes for background of the text
-                        fontFace, fontScale, fontColor, thickness = cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 0, 255), 1
-                        # Write the background of the text on frame
-                        cv2.putText(self.media, feedbackText, (blob[0], blob[1] - 5), fontFace, fontScale, fontColor, thickness,
-                                cv2.LINE_AA)
 
 
             # Show current frame
