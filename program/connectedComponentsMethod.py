@@ -21,10 +21,12 @@ class ConnectedComponentMethod:
         processImage = colorMaskAuto(originalImage, colSelector)
         return self.__continueMethod(originalImage, processImage)
 
-    def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray):
-        # gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    def runNoMasking(self, originalImage: np.ndarray):
+        processedImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
+        processedImage = cv2.threshold(processedImage, 102, 255, cv2.THRESH_BINARY)[1]
+        return self.__continueMethod(originalImage, processedImage)
 
-        # binaryImage = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)[1]
+    def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray):
         num_labels, labels = cv2.connectedComponents(processedImage)
 
         label_hue = np.uint8(179 * labels / np.max(labels))
@@ -46,12 +48,20 @@ class ConnectedComponentMethod:
 
             blobs.append((x, y, w, h))
 
+        filtredBlobs = []
+        for blob in blobs:
+            if blob[2] > 50 and blob[3] > 50:
+                filtredBlobs.append(blob)
+        blobs = filtredBlobs
+
         for blob in blobs:
             originalImage = cv2.rectangle(originalImage, (blob[0], blob[1]), (blob[0] + blob[2], blob[1] + blob[3]),
                                           (0, 0, 255), 1)
 
+
         self.blobTracking.run(blobs, originalImage)
 
+        cv2.imshow('processedImage', labeled_img)
         cv2.imshow(self.window_name, originalImage)
 
         return blobs

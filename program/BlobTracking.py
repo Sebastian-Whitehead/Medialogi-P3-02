@@ -4,8 +4,18 @@ import cv2
 
 """
 USAGE
-Call the 'BlobTracking' class before running the program
-Call the 'run'-method each frame the program should track the blobs
+Call the 'BlobTracking' class before running the program ->
+self.blobTracking = BlobTracking(
+    window_name=self.window_name,
+    collisionType=str,
+    addBlobClick=int
+)
+
+Call the 'run'-method each frame the program should track the blobs ->
+self.blobTracking.run(blobs, media)
+
+If the class already have a click function, add the 'addLabelToBlobs'-method ->
+self.blobTracking.addLabelToBlobs((x, y))
 
 """
 
@@ -33,13 +43,13 @@ class BlobTracking:
     # Add label to clicked blob
     def __addLabel_event(self, event, x, y, flags, params):
         if flags == self.addBlobClick and self.clickable:  # (Left click)
-            self.__addLabelToBlobs((x, y))  # Check if blob is clicked on
+            self.addLabelToBlobs((x, y))  # Check if blob is clicked on
             self.clickable = False  # Disable clicking before releasing
         elif flags == 0:  # (No click)
             self.clickable = True  # Enable clicking on releasing
 
     # Check if the blob is clicked on and give the blob a label
-    def __addLabelToBlobs(self, mousePos: [float]):
+    def addLabelToBlobs(self, mousePos: [float]):
         for i, blob in enumerate(self.blobs):  # Go through all blobs
             if pointRectCollider(self.colType, mousePos, blob):  # Check rect/mouse collision
                 size = len(self.labelBlobs)  # Get the length of all labeled blobs
