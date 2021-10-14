@@ -1,4 +1,4 @@
-from connectedComponentsMethod import *
+from connectedComponentsMethod import ConnectedComponentMethod
 from SelfmadeBlobDetection import *
 from SimpleBlobDetector import *
 from MotionDetection import motion_detection
@@ -12,7 +12,7 @@ def nothing(x):
 # Main function running the live video from standard camera in users computer
 # Running image processing and movement and/or color detection.
 # Counts the amount of squats made by the user and shows it in the display.
-def main():
+def main(trackingMethod):
     # Name of window name pop-up
     window_name = 'Training Assistent Computer'
 
@@ -68,9 +68,10 @@ def main():
 
         # Pick which blob detector method to use
         # blobDetectionManual(frameCopy, lower, upper)
-        SimpleBlobDetectorManual(frameCopy, lower, upper)
-        connectedComponentsMethodManual(frameCopy, lower, upper)
+        #SimpleBlobDetectorManual(frameCopy, lower, upper)
+        #connectedComponentsMethodManual(frameCopy, lower, upper)
         #motion_detection(cap)
+        trackingMethod.runManualMethod(frameCopy, lower, upper)
 
         # Write counter on image
         # Get counter text
@@ -95,4 +96,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    CCM = ConnectedComponentMethod()
+    main(CCM)

@@ -1,6 +1,7 @@
 import random
 from math import sqrt
 import cv2
+from CalcSquat import CalcSquat
 
 """
 USAGE
@@ -10,8 +11,9 @@ Call the 'run'-method each frame the program should track the blobs
 """
 
 
-class BlobTracking:
+class BlobTracking(CalcSquat):
     def __init__(self, window_name: str, collisionType: str, addBlobClick: int):
+        super().__init__()
         self.window_name = window_name  # Set the window name of the window the tracking is enabled on
         self.colType = collisionType  # Collision type for detecting rect/mouse hit
         self.addBlobClick = addBlobClick  # Button label for adding labels
@@ -28,6 +30,10 @@ class BlobTracking:
     def run(self, blobs, media):
         self.__setBlobs(blobs)  # Set the current frames blobs
         self.__trackBlobs()  # Analyze the blobs
+
+        self.runCalc(self.labelBlobs)
+        media = self.drawDat(media)
+
         return self.__writeLabel(media)  # Write the label on the screen
 
     # Add label to clicked blob
