@@ -68,8 +68,8 @@ def main():
 
         # Pick which blob detector method to use
         # blobDetectionManual(frameCopy, lower, upper)
-        SimpleBlobDetectorManual(frameCopy, lower, upper)
-        connectedComponentsMethodManual(frameCopy, lower, upper)
+        #SimpleBlobDetectorManual(frameCopy, lower, upper)
+        #ConnectedComponentMethod.runManualMethod(frameCopy, lower, upper)
         #motion_detection(cap)
 
         # Write counter on image
