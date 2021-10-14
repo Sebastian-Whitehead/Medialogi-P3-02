@@ -65,10 +65,6 @@ def main(trackingMethod):
         colSelector = 'greenGlove'
 
         # Pick which blob detector method to use
-        # blobDetectionManual(frameCopy, lower, upper)
-        #SimpleBlobDetectorManual(frameCopy, lower, upper)
-        #connectedComponentsMethodManual(frameCopy, lower, upper)
-        #motion_detection(cap)
         trackingMethod.runManualMethod(frameCopy, lower, upper)
 
         # Write counter on image
@@ -91,7 +87,6 @@ def main(trackingMethod):
     # When everything done, release the capture
     originalFrame.release()
     cv2.destroyAllWindows()
-
 
 if __name__ == '__main__':
     CCM = ConnectedComponentMethod()

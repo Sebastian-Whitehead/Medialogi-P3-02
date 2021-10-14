@@ -31,8 +31,9 @@ class BlobTracking(CalcSquat):
         self.__setBlobs(blobs)  # Set the current frames blobs
         self.__trackBlobs()  # Analyze the blobs
 
-        self.runCalc(self.labelBlobs)
-        media = self.drawDat(media)
+        self.getData(self.labelBlobs)
+        self.countSquat(self.labelBlobs)
+        self.drawData(media)
 
         return self.__writeLabel(media)  # Write the label on the screen
 
