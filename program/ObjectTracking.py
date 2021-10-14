@@ -20,6 +20,7 @@ class TrackObject:
 
     def main(self):
         # Video to test
+        cap = cv2.VideoCapture('TestImages/udenhandsker.mp4')
         cap = cv2.VideoCapture('TestImages/greensmall.mp4')
 
         # Frame counter
@@ -28,6 +29,8 @@ class TrackObject:
         while True:
             # Capture frame-by-frame
             _, frame = cap.read()
+            #frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            #frame = cv2.resize(frame, (int(1080 / 2), int(1920 / 2)))
 
             # Skip frames
             frameCount += 1
