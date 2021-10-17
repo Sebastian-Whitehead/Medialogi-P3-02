@@ -17,7 +17,7 @@ class BlobTracking(CalcSquat):
         self.window_name = window_name  # Set the window name of the window the tracking is enabled on
         self.colType = collisionType  # Collision type for detecting rect/mouse hit
         self.addBlobClick = addBlobClick  # Button label for adding labels
-        self.maxScore = 10  # Max similarity score threshold. -> Send to archiveed blob data
+        self.maxScore = 250  # Max similarity score threshold. -> Send to archiveed blob data
         self.blobDataArchive = dict()  # Make dict for archived blob data
 
         self.labelBlobs = {}  # Dict for labeled blobs
@@ -87,7 +87,7 @@ class BlobTracking(CalcSquat):
                 prevLabel = prevBlob  # Save the label of this blob
                 prevBlob = self.labelBlobs[prevBlob]  # Get the coordination of this blob
                 # Check current blobs for similarity score
-                self.__checkScore(prevLabel, prevBlob, [self.blobs, self.blobDataArchive])
+                self.__checkScore(prevLabel, prevBlob, [self.blobs]) #, self.blobDataArchive
 
             # Return all the next blobs with their labels and coordination
             self.labelBlobs = self.newLabelBlobs
@@ -115,8 +115,11 @@ class BlobTracking(CalcSquat):
                 self.newLabelBlobs[prevLabel] = newBlob  # Mark the closest blob its buddy with the same label
                 return True
 
-        self.blobDataArchive[prevLabel] = prevBlob  # Append the labeled blob to archive
-        return False
+
+        #if not match:
+        #self.blobDataArchive[prevLabel] = prevBlob  # Append the labeled blob to archive
+        #return False
+
 
 
 # Calculate the similarities of two blobs
