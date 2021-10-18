@@ -11,14 +11,15 @@ Call the 'run'-method each frame the program should track the blobs
 """
 
 
-class BlobTracking(CalcSquat):
+class BlobTracking():
     def __init__(self, window_name: str, collisionType: str, addBlobClick: int):
         super().__init__()
         self.window_name = window_name  # Set the window name of the window the tracking is enabled on
         self.colType = collisionType  # Collision type for detecting rect/mouse hit
         self.addBlobClick = addBlobClick  # Button label for adding labels
-        self.maxScore = 250  # Max similarity score threshold. -> Send to archiveed blob data
-        self.blobDataArchive = dict()  # Make dict for archived blob data
+        self.maxScore = 300  # Max similarity score threshold. -> Send to archiveed blob data
+        self.resetStartFrame = 0
+        self.resetTimer = 5
 
         self.labelBlobs = {}  # Dict for labeled blobs
         self.clickable = True  # Holder for only clicking the screen once
@@ -28,14 +29,23 @@ class BlobTracking(CalcSquat):
         cv2.namedWindow(self.window_name)  # Get the window the tracking should be on
         cv2.setMouseCallback(self.window_name, self.__addLabel_event)  # Make a event clicker on the window
 
+        self.calcSquat = CalcSquat()
+
     # Run the blob tracking
-    def run(self, blobs, media):
+    def run(self, blobs, media, frameCount):
         self.__setBlobs(blobs)  # Set the current frames blobs
         self.__trackBlobs()  # Analyze the blobs
 
-        self.getData(self.labelBlobs)
-        self.countSquat(self.labelBlobs)
-        self.drawData(media)
+        # Only show data if the counter is off
+        self.frameCount = frameCount  # Set the current framecount
+        if self.resetStartFrame - 1 < frameCount:
+            self.calcSquat.run(self.labelBlobs, media)
+        # Show counter
+        else:
+            pos, text = (10, 25), str(int((self.resetStartFrame - frameCount) / 30))  # Set the position of the text
+            face, scale, thickness, color = cv2.FONT_HERSHEY_DUPLEX, 0.5, 1, (150, 150, 150)  # Set other attributes
+            cv2.putText(media, text, pos, face, scale, color, thickness, cv2.LINE_AA)  # Write text on frame
+            self.calcSquat.resetData()
 
         return self.__writeLabel(media)  # Write the label on the screen
 
@@ -44,6 +54,8 @@ class BlobTracking(CalcSquat):
         if flags == self.addBlobClick and self.clickable:  # (Left click)
             self.__addLabelToBlobs((x, y))  # Check if blob is clicked on
             self.clickable = False  # Disable clicking before releasing
+        elif flags == 2 and self.clickable:  # (Right click)
+            self.resetStartFrame = self.frameCount + 30 * self.resetTimer
         elif flags == 0:  # (No click)
             self.clickable = True  # Enable clicking on releasing
 
@@ -51,9 +63,20 @@ class BlobTracking(CalcSquat):
     def __addLabelToBlobs(self, mousePos: [float]):
         for i, blob in enumerate(self.blobs):  # Go through all blobs
             if pointRectCollider(self.colType, mousePos, blob):  # Check rect/mouse collision
+
                 size = len(self.labelBlobs)  # Get the length of all labeled blobs
-                self.labelBlobs['label' + str(size)] = blob  # Give the blob a label
-                print('Label', size, 'made at', blob)  # Print label
+                exists = False  # Check if the blob already exists
+
+                # There are any labeled blobs already
+                if size > 0:
+                    # Loop through already labeled blobs
+                    for labelBlob in self.labelBlobs:
+                        if self.labelBlobs[labelBlob] == blob: exists = True
+
+                # Label blob if not found any existing
+                if not exists:
+                    self.labelBlobs['label' + str(size)] = blob  # Give the blob a label
+                    print('Label', size, 'made at', blob)  # Print label
 
     # Give the current blobs to the blob tracker
     def __setBlobs(self, blobs):
@@ -83,43 +106,39 @@ class BlobTracking(CalcSquat):
             self.newLabelBlobs = {}  # Make a dict for the next blobs
 
             # Loop all previous blobs
-            for i, prevBlob in enumerate(self.labelBlobs):
+            for j, prevBlob in enumerate(self.labelBlobs):
                 prevLabel = prevBlob  # Save the label of this blob
-                prevBlob = self.labelBlobs[prevBlob]  # Get the coordination of this blob
+                # Get the coordination of this blob
+                prevBlob = self.labelBlobs[prevLabel]
                 # Check current blobs for similarity score
-                self.__checkScore(prevLabel, prevBlob, [self.blobs]) #, self.blobDataArchive
+                self.__checkScore(prevLabel, prevBlob)
 
             # Return all the next blobs with their labels and coordination
             self.labelBlobs = self.newLabelBlobs
 
     # Compare all blobs with each labeled blobs for a closest match
-    def __checkScore(self, prevLabel, prevBlob, blobGroups):
+    def __checkScore(self, prevLabel, prevBlob):
         newBlob = None  # Set this blobs next buddy to None/Empty
 
-        # Loop through all the blob groups
-        for i, blobs in enumerate(blobGroups):
-            # Loop all new blobs in current frame
-            for j, curBlob in enumerate(blobs):
-                # Each blob will get a score to compare
-                curScore = calcScore(prevBlob, curBlob, method=self.colType)
-                # Calculate the score for the next blob, if there is any
-                if newBlob is not None:
-                    nextScore = calcScore(prevBlob, newBlob, method=self.colType)  # Calc. the score of the new blob
-                    # If this blobs distance is shorter than the current ones, ..
-                    if curScore < nextScore: newBlob = curBlob  # .. set this blob as the buddy
-                else:
-                    newBlob = curBlob  # Set the current blob as next one, if there None
+        # Loop all new blobs in current frame
+        for i, curBlob in enumerate(self.blobs):
+            # Each blob will get a score to compare
+            if curBlob in self.blobs: curScore = calcScore(prevBlob, curBlob, method=self.colType)
+            # Calculate the score for the next blob, if there is any
+            if newBlob is not None:
+                # Calc. the score of the new blob
+                if curBlob in self.blobs: nextScore = calcScore(prevBlob, newBlob, method=self.colType)
+                # If this blobs distance is shorter than the current ones, ..
+                # .. set this blob as the buddy
+                if curScore < nextScore: newBlob = curBlob
+            else:
+                newBlob = curBlob  # Set the current blob as next one, if there None
 
-            # Check if the best score is less that tne max score threshold
+        # Check if the best score is less that tne max score threshold
+        if newBlob is not None:
             if calcScore(prevBlob, newBlob, method=self.colType) < self.maxScore:
-                self.newLabelBlobs[prevLabel] = newBlob  # Mark the closest blob its buddy with the same label
-                return True
-
-
-        #if not match:
-        #self.blobDataArchive[prevLabel] = prevBlob  # Append the labeled blob to archive
-        #return False
-
+                # Mark the closest blob its buddy with the same label
+                self.newLabelBlobs[prevLabel] = newBlob
 
 
 # Calculate the similarities of two blobs

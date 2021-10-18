@@ -7,11 +7,12 @@ import cv2
 class CalcSquat:
 
     def __init__(self):
-        self.blobData = dict()  # Make dict for holding squat data
+        self.resetData()
 
-        self.squatCount = 0  # Count how many squats the user have made
-        self.flag = 0  # Flag holder for users current position
-        self.offset = 40  # Pixels offset as to the actual threshold
+    def run(self, labelBlobs, media):
+        self.getData(labelBlobs) # Get calculate squat data (CalcSquat)
+        self.countSquat(labelBlobs) # Count each squat (CalcSquat)
+        self.drawData(media) # Draw the guide lines (CalcSquat)
 
     # Run the program getting the min. and max. value of the blob
     def getData(self, labelBlobs):
@@ -34,6 +35,10 @@ class CalcSquat:
                 # Set the bottom of the blob to max
                 self.blobData[label]['max'] = blob[1] + blob[3]
 
+            self.blobData[label]['offset'] = int(self.blobData[label]['max'] /
+                                                 self.blobData[label]['min'] * 7)
+            self.blobData[label]['minDistance'] = blob[3]
+
     # Count the squat using the min. and max. thresholds
     def countSquat(self, labelBlobs):
 
@@ -44,12 +49,14 @@ class CalcSquat:
             thisBlobData = self.blobData[label]  # Get the blob data from the dataset
 
             # Only count if the min and max has correct position and not to close
-            if thisBlobData['min'] < thisBlobData['max'] - self.offset:
+            if thisBlobData['max'] > thisBlobData['minDistance'] + thisBlobData['min'] + thisBlobData['offset'] * 2:
                 # Check if the blob is under the max level subtracted by the offset
-                if blob[1] > thisBlobData['max'] - self.offset and self.flag == 1:
+                if (blob[1] + blob[3] > thisBlobData['max'] - thisBlobData['offset'] and
+                        self.flag == 1):
                     self.flag = -1  # Set flag to -1 / DOWN
+                    print('Down')
                 # Check if the blob is above the min. value additional offset
-                elif blob[1] < thisBlobData['min'] + self.offset:
+                elif blob[1] < thisBlobData['min'] + thisBlobData['offset']:
                     # Check if the user has been DOWN / -1
                     if self.flag == -1:
                         self.squatCount += 1  # Count one squat
@@ -58,6 +65,7 @@ class CalcSquat:
                     # Check if flag is NEUTRAL / 0
                     if self.flag == 0:
                         self.flag = 1  # Set flag to 1 / UP
+                        print('Up')
 
     # Draw the threshold lines on the frame
     def drawData(self, media):
@@ -67,18 +75,27 @@ class CalcSquat:
             label = blob  # Set blob label
             blobData = self.blobData[blob]  # Set blob data
 
-            # Draw min. line
+            # Draw raw lines
+            # Min. line
             drawLine(label + ': min', 0, blobData['min'], (0, 0, 255), media)
-            # Draw min. line with offset
-            drawLine(label + ': min', 0, blobData['min'] + self.offset, (0, 255, 0), media)
-
-            # Draw max. line
+            # Max. line
             drawLine(label + ': max', 0, blobData['max'], (0, 0, 255), media)
+            """
+            """
+
+            # Draw offset lines
+            # Draw min. line with offset
+            drawLine(label + ': min', 0, blobData['min'] + blobData['offset'], (0, 255, 0), media)
             # Draw max. line with threshold
-            drawLine(label + ': max', 0, blobData['max'] - self.offset, (0, 255, 0), media)
+            drawLine(label + ': max', 0, blobData['max'] - blobData['offset'], (0, 255, 0), media)
 
         return media  # Return the frame
 
+    def resetData(self):
+        self.blobData = dict()  # Make dict for holding squat data
+
+        self.squatCount = 0  # Count how many squats the user have made
+        self.flag = -1  # Flag holder for users current position
 
 # Draw the threshold line with label
 def drawLine(text, x, y, color, media):

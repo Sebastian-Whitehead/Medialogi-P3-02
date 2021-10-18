@@ -12,16 +12,16 @@ class ConnectedComponentMethod:
             addBlobClick=1
         )
 
-    def runManualMethod(self, originalImage: np.ndarray, lower: tuple, upper: tuple):
+    def runManualMethod(self, originalImage: np.ndarray, lower: tuple, upper: tuple, frameCount):
         processedImage = colorMaskManual(originalImage, lower, upper)
-        return self.__continueMethod(originalImage, processedImage)
+        return self.__continueMethod(originalImage, processedImage, frameCount)
 
 
-    def runAutoMethod(self, originalImage: np.ndarray, colSelector: str):
+    def runAutoMethod(self, originalImage: np.ndarray, colSelector: str, frameCount):
         processImage = colorMaskAuto(originalImage, colSelector)
-        return self.__continueMethod(originalImage, processImage)
+        return self.__continueMethod(originalImage, processImage, frameCount)
 
-    def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray):
+    def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray, frameCount):
         # gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         # binaryImage = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)[1]
@@ -44,13 +44,15 @@ class ConnectedComponentMethod:
             x, y = min(nonZeroY), min(nonZeroX)
             w, h = max(nonZeroY) - x, max(nonZeroX) - y
 
-            blobs.append((x, y, w, h))
+            # Filter small blobs
+            if w > 50 and h > 50:
+                blobs.append((x, y, w, h))
 
         for blob in blobs:
             originalImage = cv2.rectangle(originalImage, (blob[0], blob[1]), (blob[0] + blob[2], blob[1] + blob[3]),
                                           (0, 0, 255), 1)
 
-        self.blobTracking.run(blobs, originalImage)
+        self.blobTracking.run(blobs, originalImage, frameCount)
 
         cv2.imshow(self.window_name, originalImage)
 

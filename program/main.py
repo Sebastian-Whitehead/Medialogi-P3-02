@@ -1,6 +1,7 @@
 import cv2
 from connectedComponentsMethod import ConnectedComponentMethod
 
+
 # For handling the sliders.
 # This should stay as it is ..
 def nothing(x):
@@ -37,6 +38,8 @@ def main(trackingMethod):
     cv2.createTrackbar('Lower threshold', window_name, 1, 10, nothing)
     cv2.createTrackbar('Upper threshold', window_name, 1, 10, nothing)
 
+    frameCount = 0  # Frame counter
+
     # Run video
     while True:
         # Capture frame-by-frame
@@ -65,7 +68,7 @@ def main(trackingMethod):
         colSelector = 'greenGlove'
 
         # Pick which blob detector method to use
-        trackingMethod.runManualMethod(frameCopy, lower, upper)
+        trackingMethod.runManualMethod(frameCopy, lower, upper, frameCount)
 
         # Write counter on image
         # Get counter text
@@ -81,12 +84,16 @@ def main(trackingMethod):
 
         # Display the resulting frame
         cv2.imshow(window_name, frameCopy)
+
+        frameCount += 1  # Skip frames
+
         if cv2.waitKey(15) == ord('q'):
             break
 
     # When everything done, release the capture
     originalFrame.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     CCM = ConnectedComponentMethod()
