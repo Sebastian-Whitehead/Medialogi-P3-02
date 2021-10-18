@@ -19,7 +19,7 @@ class BlobTracking():
         self.addBlobClick = addBlobClick  # Button label for adding labels
         self.maxScore = 300  # Max similarity score threshold. -> Send to archiveed blob data
         self.resetStartFrame = 0
-        self.resetTimer = 5
+        self.resetTimer = 2
 
         self.labelBlobs = {}  # Dict for labeled blobs
         self.clickable = True  # Holder for only clicking the screen once
@@ -46,6 +46,7 @@ class BlobTracking():
             face, scale, thickness, color = cv2.FONT_HERSHEY_DUPLEX, 0.5, 1, (150, 150, 150)  # Set other attributes
             cv2.putText(media, text, pos, face, scale, color, thickness, cv2.LINE_AA)  # Write text on frame
             self.calcSquat.resetData()
+            self.__setLabelsByPosition()
 
         return self.__writeLabel(media)  # Write the label on the screen
 
@@ -140,6 +141,10 @@ class BlobTracking():
                 # Mark the closest blob its buddy with the same label
                 self.newLabelBlobs[prevLabel] = newBlob
 
+    def __setLabelsByPosition(self):
+        if len(self.blobs) > 0:
+            sortedBlobs = sorted(self.blobs, key=lambda x: x[1], reverse=True)
+            self.labelBlobs['head'] = sortedBlobs[0]
 
 # Calculate the similarities of two blobs
 # distance, dimensions
