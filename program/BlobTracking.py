@@ -1,6 +1,5 @@
-import random
+import random, cv2, UI
 from math import sqrt
-import cv2
 from CalcSquat import CalcSquat
 
 """
@@ -42,9 +41,9 @@ class BlobTracking():
             self.calcSquat.run(self.labelBlobs, media)
         # Show counter
         else:
-            pos, text = (10, 25), str(int((self.resetStartFrame - frameCount) / 30))  # Set the position of the text
-            face, scale, thickness, color = cv2.FONT_HERSHEY_DUPLEX, 0.5, 1, (150, 150, 150)  # Set other attributes
-            cv2.putText(media, text, pos, face, scale, color, thickness, cv2.LINE_AA)  # Write text on frame
+            pos = (int(media.shape[1] / 2), int(media.shape[0] / 2))
+            text = 'Start in: ' + str(int((self.resetStartFrame - frameCount) / 30))  # Set the position of the text
+            UI.writeText(media, text, pos, 1, 'center')
             self.calcSquat.resetData()
             self.__setLabelsByPosition()
 
@@ -53,10 +52,11 @@ class BlobTracking():
     # Add label to clicked blob
     def __addLabel_event(self, event, x, y, flags, params):
         if flags == self.addBlobClick and self.clickable:  # (Left click)
-            self.__addLabelToBlobs((x, y))  # Check if blob is clicked on
+            #self.__addLabelToBlobs((x, y))  # Check if blob is clicked on
+            self.resetStartFrame = self.frameCount + 30 * self.resetTimer # Reset system
             self.clickable = False  # Disable clicking before releasing
         elif flags == 2 and self.clickable:  # (Right click)
-            self.resetStartFrame = self.frameCount + 30 * self.resetTimer
+            pass
         elif flags == 0:  # (No click)
             self.clickable = True  # Enable clicking on releasing
 
@@ -119,19 +119,17 @@ class BlobTracking():
 
     # Compare all blobs with each labeled blobs for a closest match
     def __checkScore(self, prevLabel, prevBlob):
-        newBlob = None  # Set this blobs next buddy to None/Empty
+        newBlob, curScore, nextScore = None, None, None  # Set this blobs next buddy to None/Empty
 
         # Loop all new blobs in current frame
         for i, curBlob in enumerate(self.blobs):
             # Each blob will get a score to compare
             if curBlob in self.blobs: curScore = calcScore(prevBlob, curBlob, method=self.colType)
             # Calculate the score for the next blob, if there is any
-            if newBlob is not None:
+            if newBlob is not None and curScore is not None:
                 # Calc. the score of the new blob
                 if curBlob in self.blobs: nextScore = calcScore(prevBlob, newBlob, method=self.colType)
-                # If this blobs distance is shorter than the current ones, ..
-                # .. set this blob as the buddy
-                if curScore < nextScore: newBlob = curBlob
+                if curScore < nextScore: newBlob = curBlob # Set new buddy if score is lower than current
             else:
                 newBlob = curBlob  # Set the current blob as next one, if there None
 

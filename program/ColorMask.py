@@ -18,6 +18,7 @@ def colorMaskManual(img: np.ndarray, lower: tuple, upper: tuple) -> np.ndarray:
 def colorMaskAuto(img: np.ndarray, colSelector: str) -> np.ndarray:
     pass
 
+
 def processImageContinue(image: np.ndarray) -> np.ndarray:
     # Image to grayscale
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -36,7 +37,7 @@ def processImageContinue(image: np.ndarray) -> np.ndarray:
     image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
 
     # Floodfill image
-    th, im_th = cv2.threshold(image, 220, 255, cv2.THRESH_BINARY_INV);
+    th, im_th = cv2.threshold(image, 220, 255, cv2.THRESH_BINARY_INV)
     # Copy the thresholded image.
     im_floodfill = im_th.copy()
     # Mask used to flood filling.
@@ -49,6 +50,6 @@ def processImageContinue(image: np.ndarray) -> np.ndarray:
     image = im_th | im_floodfill_inv
 
     # Show processed image
-    cv2.imshow('Processed image', image)
+    #cv2.imshow('Processed image', image)
 
     return image

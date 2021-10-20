@@ -4,8 +4,8 @@ from ColorMask import *
 from BlobTracking import BlobTracking
 
 class ConnectedComponentMethod:
-    def __init__(self):
-        self.window_name = 'ConnectedComponentsMethod'
+    def __init__(self, window_name):
+        self.window_name = window_name
         self.blobTracking = BlobTracking(
             window_name=self.window_name,
             collisionType='dim',
@@ -22,9 +22,7 @@ class ConnectedComponentMethod:
         return self.__continueMethod(originalImage, processImage, frameCount)
 
     def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray, frameCount):
-        # gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-        # binaryImage = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)[1]
         num_labels, labels = cv2.connectedComponents(processedImage)
 
         label_hue = np.uint8(179 * labels / np.max(labels))
@@ -49,12 +47,12 @@ class ConnectedComponentMethod:
                 blobs.append((x, y, w, h))
 
         for blob in blobs:
-            originalImage = cv2.rectangle(originalImage, (blob[0], blob[1]), (blob[0] + blob[2], blob[1] + blob[3]),
-                                          (0, 0, 255), 1)
+            pos1, pos2 = (blob[0], blob[1]), (blob[0] + blob[2], blob[1] + blob[3])
+            originalImage = cv2.rectangle(originalImage, pos1, pos2, (0, 0, 255), 1)
 
         self.blobTracking.run(blobs, originalImage, frameCount)
 
-        cv2.imshow(self.window_name, originalImage)
+        #cv2.imshow(self.window_name, originalImage)
 
         return blobs
 
