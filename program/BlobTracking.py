@@ -28,7 +28,7 @@ class BlobTracking():
         cv2.namedWindow(self.window_name)  # Get the window the tracking should be on
         cv2.setMouseCallback(self.window_name, self.__addLabel_event)  # Make a event clicker on the window
 
-        self.calcSquat = CalcSquat()
+        self.calcSquat = CalcSquat() # Making a CalcSquat object
 
     # Run the blob tracking
     def run(self, blobs, media, frameCount):
@@ -39,8 +39,9 @@ class BlobTracking():
         self.frameCount = frameCount  # Set the current framecount
         if self.resetStartFrame - 1 < frameCount:
             self.calcSquat.run(self.labelBlobs, media)
-        # Show counter
-        else:
+
+        else:  # Show counter
+
             pos = (int(media.shape[1] / 2), int(media.shape[0] / 2))
             text = 'Start in: ' + str(int((self.resetStartFrame - frameCount) / 30))  # Set the position of the text
             UI.writeText(media, text, pos, 1, 'center')
@@ -52,8 +53,8 @@ class BlobTracking():
     # Add label to clicked blob
     def __addLabel_event(self, event, x, y, flags, params):
         if flags == self.addBlobClick and self.clickable:  # (Left click)
-            #self.__addLabelToBlobs((x, y))  # Check if blob is clicked on
-            self.resetStartFrame = self.frameCount + 30 * self.resetTimer # Reset system
+            # self.__addLabelToBlobs((x, y))  # Check if blob is clicked on and add label (Commented)
+            self.resetStartFrame = self.frameCount + 30 * self.resetTimer  # Reset system
             self.clickable = False  # Disable clicking before releasing
         elif flags == 2 and self.clickable:  # (Right click)
             pass
@@ -109,10 +110,9 @@ class BlobTracking():
             # Loop all previous blobs
             for j, prevBlob in enumerate(self.labelBlobs):
                 prevLabel = prevBlob  # Save the label of this blob
-                # Get the coordination of this blob
-                prevBlob = self.labelBlobs[prevLabel]
-                # Check current blobs for similarity score
-                self.__checkScore(prevLabel, prevBlob)
+                prevBlob = self.labelBlobs[prevLabel]  # Get the coordination of this blob
+
+                self.__checkScore(prevLabel, prevBlob)  # Check current blobs for similarity score
 
             # Return all the next blobs with their labels and coordination
             self.labelBlobs = self.newLabelBlobs
@@ -129,7 +129,7 @@ class BlobTracking():
             if newBlob is not None and curScore is not None:
                 # Calc. the score of the new blob
                 if curBlob in self.blobs: nextScore = calcScore(prevBlob, newBlob, method=self.colType)
-                if curScore < nextScore: newBlob = curBlob # Set new buddy if score is lower than current
+                if curScore < nextScore: newBlob = curBlob  # Set new buddy if score is lower than current
             else:
                 newBlob = curBlob  # Set the current blob as next one, if there None
 
@@ -143,6 +143,7 @@ class BlobTracking():
         if len(self.blobs) > 0:
             sortedBlobs = sorted(self.blobs, key=lambda x: x[1], reverse=True)
             self.labelBlobs['head'] = sortedBlobs[0]
+
 
 # Calculate the similarities of two blobs
 # distance, dimensions
@@ -173,14 +174,9 @@ def calcDimensionSim(mainBlob: [float], otherBlob: [float], method: str) -> floa
 # Get collision of point and rectangle
 # 'corners' will check with the corners of the rectangle ((x1,y2),(x2,y2))
 # 'dim' will check with the width and height of the rectangle ((x,y),(w,h)))
-def pointRectCollider(method, point, rect):
-    if method == 'corners':
-        if rect[0] < point[0] < rect[2] and rect[1] < point[1] < rect[3]:
-            return True
-    elif method == 'dim':
-        if rect[0] < point[0] < rect[0] + rect[2] and rect[1] < point[1] < rect[1] + rect[3]:
-            return True
-    return False
+def pointRectCollider(method, p, r):
+    if method == 'corners' and r[0] < p[0] < r[2] and r[1] < p[1] < r[3]: return True
+    if method == 'dim' and r[0] < p[0] < r[0] + r[2] and r[1] < p[1] < r[1] + r[3]: return True
 
 
 # Calculate the coordination for the middle of the blob
@@ -188,30 +184,19 @@ def pointRectCollider(method, point, rect):
 # 'dim' will check with the width and height of the rectangle ((x,y),(w,h)))
 def calcMiddle(method, blob: [float]) -> [float]:
     if method == 'corners':
-        # Calculate x-coordination of the middle
-        xMiddle = blob[0] + (blob[2] - blob[0]) / 2
-        # Calculate y-coordination of the middle
-        yMiddle = blob[1] + (blob[3] - blob[1]) / 2
-        # Make into list
-        middle = [xMiddle, yMiddle]
-        # Return the middle coordination of the blob
-        return middle
+        xMiddle = blob[0] + (blob[2] - blob[0]) / 2  # Calculate x-coordination of the middle
+        yMiddle = blob[1] + (blob[3] - blob[1]) / 2  # Calculate y-coordination of the middle
+        middle = [xMiddle, yMiddle]  # Make into list
+        return middle  # Return the middle coordination of the blob
     elif method == 'dim':
-        # Calculate x-coordination of the middle
-        xMiddle = blob[0] + blob[2] / 2
-        # Calculate y-coordination of the middle
-        yMiddle = blob[1] + blob[3] / 2
-        # Make into list
-        middle = [xMiddle, yMiddle]
-        # Return the middle coordination of the blob
-        return middle
+        xMiddle = blob[0] + blob[2] / 2  # Calculate x-coordination of the middle
+        yMiddle = blob[1] + blob[3] / 2  # Calculate y-coordination of the middle
+        middle = [xMiddle, yMiddle]  # Make into list
+        return middle  # Return the middle coordination of the blob
 
 
 # Calculate the distance between two points in 2D space
 def calcDistance(p1: [float], p2: [float]) -> float:
-    # Calculate the x coordinate
-    x = float(p2[0]) - float(p1[0])
-    # Calculate the y coordinate
-    y = float(p2[1]) - float(p1[1])
-    # Calculate and return the distance
-    return sqrt(x ** 2 + y ** 2)
+    x = float(p2[0]) - float(p1[0])  # Calculate the x coordinate
+    y = float(p2[1]) - float(p1[1])  # Calculate the y coordinate
+    return sqrt(x ** 2 + y ** 2)  # Calculate and return the distance
