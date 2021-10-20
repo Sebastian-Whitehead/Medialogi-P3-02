@@ -33,11 +33,11 @@ def processImageContinue(image: np.ndarray) -> np.ndarray:
     # image = cv2.Canny(image, 100, 200)
 
     # Morph image
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones((7, 7), np.uint8)
     image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
 
     # Floodfill image
-    th, im_th = cv2.threshold(image, 220, 255, cv2.THRESH_BINARY_INV)
+    th, im_th = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY_INV)
     # Copy the thresholded image.
     im_floodfill = im_th.copy()
     # Mask used to flood filling.
@@ -50,6 +50,6 @@ def processImageContinue(image: np.ndarray) -> np.ndarray:
     image = im_th | im_floodfill_inv
 
     # Show processed image
-    #cv2.imshow('Processed image', image)
+    cv2.imshow('Processed image', image)
 
     return image

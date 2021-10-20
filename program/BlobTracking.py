@@ -41,7 +41,7 @@ class BlobTracking():
 
         else:  # Show counter
 
-            pos = (int(media.shape[1] / 2), int(media.shape[0] / 2))
+            pos = (int(media.shape.y / 2), int(media.shape.x / 2))
             text = 'Start in: ' + str(int((self.resetStartFrame - frameCount) / 30))  # Set the position of the text
             UI.writeText(media, text, pos, 1, 'center')
             self.calcSquat.resetData()
@@ -93,7 +93,7 @@ class BlobTracking():
                 text = blob  # Get the label using the index
                 # Make new attributes for background of the text
                 face, scale, color, thickness = cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 0, 255), 1
-                pos = (values[0], values[1] - 5)
+                pos = (values.x, values.y - 5)
                 # Write the background of the text on frame
                 cv2.putText(media, text, pos, face, scale, color, thickness, cv2.LINE_AA)
 
@@ -140,7 +140,7 @@ class BlobTracking():
 
     def __setLabelsByPosition(self):
         if len(self.blobs) > 0:
-            sortedBlobs = sorted(self.blobs, key=lambda x: x[1], reverse=True)
+            sortedBlobs = sorted(self.blobs, key=lambda x: x.y, reverse=True)
             self.labelBlobs['head'] = sortedBlobs[len(sortedBlobs) - 1]
 
 
@@ -174,8 +174,8 @@ def calcDimensionSim(mainBlob: [float], otherBlob: [float], method: str) -> floa
 # 'corners' will check with the corners of the rectangle ((x1,y2),(x2,y2))
 # 'dim' will check with the width and height of the rectangle ((x,y),(w,h)))
 def pointRectCollider(method, p, r):
-    if method == 'corners' and r[0] < p[0] < r[2] and r[1] < p[1] < r[3]: return True
-    if method == 'dim' and r[0] < p[0] < r[0] + r[2] and r[1] < p[1] < r[1] + r[3]: return True
+    if method == 'corners' and r.x < p.x < r.w and r.y < p.y < r.h: return True
+    if method == 'dim' and r.x < p.x < r.x + r.w and r.y < p.y < r.y + r.h: return True
 
 
 # Calculate the coordination for the middle of the blob
@@ -183,19 +183,19 @@ def pointRectCollider(method, p, r):
 # 'dim' will check with the width and height of the rectangle ((x,y),(w,h)))
 def calcMiddle(method, blob: [float]) -> [float]:
     if method == 'corners':
-        xMiddle = blob[0] + (blob[2] - blob[0]) / 2  # Calculate x-coordination of the middle
-        yMiddle = blob[1] + (blob[3] - blob[1]) / 2  # Calculate y-coordination of the middle
+        xMiddle = blob.x + (blob.w - blob.x) / 2  # Calculate x-coordination of the middle
+        yMiddle = blob.y + (blob.h - blob.y) / 2  # Calculate y-coordination of the middle
         middle = [xMiddle, yMiddle]  # Make into list
         return middle  # Return the middle coordination of the blob
     elif method == 'dim':
-        xMiddle = blob[0] + blob[2] / 2  # Calculate x-coordination of the middle
-        yMiddle = blob[1] + blob[3] / 2  # Calculate y-coordination of the middle
+        xMiddle = blob.x + blob.w / 2  # Calculate x-coordination of the middle
+        yMiddle = blob.y + blob.h / 2  # Calculate y-coordination of the middle
         middle = [xMiddle, yMiddle]  # Make into list
         return middle  # Return the middle coordination of the blob
 
 
 # Calculate the distance between two points in 2D space
 def calcDistance(p1: [float], p2: [float]) -> float:
-    x = float(p2[0]) - float(p1[0])  # Calculate the x coordinate
-    y = float(p2[1]) - float(p1[1])  # Calculate the y coordinate
+    x = float(p2.x) - float(p1.x)  # Calculate the x coordinate
+    y = float(p2.y) - float(p1.y)  # Calculate the y coordinate
     return sqrt(x ** 2 + y ** 2)  # Calculate and return the distance

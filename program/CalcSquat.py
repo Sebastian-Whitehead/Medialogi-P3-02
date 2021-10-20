@@ -25,17 +25,17 @@ class CalcSquat:
             if label in self.blobData:
                 thisBlobData = self.blobData[label]  # Get current blob from data
                 # Compare current and new input. Use the min. and max.
-                thisBlobData['min'] = min(thisBlobData['min'], blob[1])
-                thisBlobData['max'] = max(thisBlobData['max'], blob[1] + blob[3])
+                thisBlobData['min'] = min(thisBlobData['min'], blob.y)
+                thisBlobData['max'] = max(thisBlobData['max'], blob.y + blob.h)
                 self.blobData[label] = thisBlobData  # Save the blob data
             else:
                 self.blobData[label] = dict()  # Make dict for the blob
                 thisBlobData = self.blobData[label]
-                thisBlobData['min'] = blob[1]  # Set the top of the blob to min
-                thisBlobData['max'] = blob[1] + blob[3]  # Set the bottom of the blob to max
+                thisBlobData['min'] = blob.y  # Set the top of the blob to min
+                thisBlobData['max'] = blob.y + blob.h  # Set the bottom of the blob to max
 
             thisBlobData['offset'] = int(thisBlobData['max'] / thisBlobData['min'] * 7)
-            thisBlobData['minDistance'] = blob[3]
+            thisBlobData['minDistance'] = blob.h
 
     # Count the squat using the min. and max. thresholds
     def countSquat(self, labelBlobs):

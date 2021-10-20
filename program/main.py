@@ -36,8 +36,8 @@ def main(trackingMethod):
             break
 
         # Manual color thresholding
-        lower = (53, 74, 68)
-        upper = (121, 255, 255)
+        lower = (40, 75, 120)
+        upper = (75, 190, 250)
 
         # Pick which blob detector method to use
         trackingMethod.runManualMethod(frameCopy, lower, upper, frameCount)
