@@ -50,6 +50,6 @@ def processImageContinue(image: np.ndarray) -> np.ndarray:
     image = im_th | im_floodfill_inv
 
     # Show processed image
-    cv2.imshow('Processed image', image)
+    #cv2.imshow('Processed image', image)
 
     return image
