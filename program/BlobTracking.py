@@ -6,7 +6,6 @@ from CalcSquat import CalcSquat
 USAGE
 Call the 'BlobTracking' class before running the program
 Call the 'run'-method each frame the program should track the blobs
-
 """
 
 
@@ -142,7 +141,7 @@ class BlobTracking():
     def __setLabelsByPosition(self):
         if len(self.blobs) > 0:
             sortedBlobs = sorted(self.blobs, key=lambda x: x[1], reverse=True)
-            self.labelBlobs['head'] = sortedBlobs[0]
+            self.labelBlobs['head'] = sortedBlobs[len(sortedBlobs) - 1]
 
 
 # Calculate the similarities of two blobs

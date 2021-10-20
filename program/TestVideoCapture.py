@@ -22,6 +22,8 @@ def videoTest(trackingMethod):
         # Pick which blob detector method to use
         trackingMethod.runManualMethod(frame, lower, upper, frameCount)
 
+        cv2.imshow(trackingMethod.window_name, frame)
+
         # Wait ms to simulate framerate
         if cv2.waitKey(15) & 0xFF == ord('q'):
             break
@@ -32,7 +34,7 @@ def videoTest(trackingMethod):
 
 
 def main():
-    CCM = ConnectedComponentMethod()
+    CCM = ConnectedComponentMethod('TestVideoCapture')
     videoTest(CCM)
 
 

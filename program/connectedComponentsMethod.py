@@ -43,7 +43,7 @@ class ConnectedComponentMethod:
             w, h = max(nonZeroY) - x, max(nonZeroX) - y
 
             # Filter small blobs
-            if w > 50 and h > 50:
+            if w > 25 and h > 25:
                 blobs.append((x, y, w, h))
 
         for blob in blobs:

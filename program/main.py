@@ -61,7 +61,7 @@ def main(trackingMethod):
 
 
 if __name__ == '__main__':
-
+    
     window_name = 'Training Assistant Computer'  # Name of window name pop-up
     CCM = ConnectedComponentMethod(window_name)
     main(CCM)
