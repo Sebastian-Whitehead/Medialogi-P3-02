@@ -73,13 +73,6 @@ def motion_detection(cap):
     cv2.destroyAllWindows()
 
 
-#while (clip.isOpened()):
-#    ret, frame = clip.read()
-#    cv2.imshow('frame', frame)
-
-#    if cv2.waitKey(4) == ord('q'):
-#        break
-#clip.release()
 
 for i in range(5, 0, -1):
     time.sleep(1)
