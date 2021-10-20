@@ -12,7 +12,8 @@ def videoTest(trackingMethod):
 
     while True:
         # Capture frame-by-frame
-        _, frame = cap.read()
+        _, originalFrame = cap.read()
+        frame = originalFrame.copy()
 
         frameCount += 1  # Skip frames
 

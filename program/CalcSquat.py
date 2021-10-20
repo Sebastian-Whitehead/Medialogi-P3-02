@@ -9,7 +9,7 @@ class CalcSquat:
         self.resetData()
 
     def run(self, labelBlobs, media):
-        if self.squatCount <= 2: self.getData(labelBlobs)  # Get calculate squat data (CalcSquat)
+        if self.squatCount < 1: self.getData(labelBlobs)  # Get calculate squat data (CalcSquat)
         self.countSquat(labelBlobs)  # Count each squat (CalcSquat)
         self.drawData(media)  # Draw the guide lines (CalcSquat)
 

@@ -51,7 +51,7 @@ class ConnectedComponentMethod:
 
         self.blobTracking.run(blobs, originalImage, frameCount)
 
-        #cv2.imshow(self.window_name, originalImage)
+        #cv2.imshow('ConnectedComponents', originalImage)
 
         return blobs
 
