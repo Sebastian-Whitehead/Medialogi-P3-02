@@ -41,7 +41,7 @@ class BlobTracking():
 
         else:  # Show counter
 
-            pos = (int(media.shape.y / 2), int(media.shape.x / 2))
+            pos = (int(media.shape[1] / 2), int(media.shape[0] / 2))
             text = 'Start in: ' + str(int((self.resetStartFrame - frameCount) / 30))  # Set the position of the text
             UI.writeText(media, text, pos, 1, 'center')
             self.calcSquat.resetData()
@@ -164,8 +164,10 @@ def calcDimensionSim(mainBlob: [float], otherBlob: [float], method: str) -> floa
     similarity = 0  # Holder for similarity score
 
     # Calculate each difference of each value (x, y, w, h)
-    for n, mainBlobValue in enumerate(mainBlob):
-        similarity += abs(mainBlobValue - otherBlob[n])  # Calculate the difference
+    similarity += abs(mainBlob.x - otherBlob.x)  # Calculate the difference
+    similarity += abs(mainBlob.y - otherBlob.y)  # Calculate the difference
+    similarity += abs(mainBlob.w - otherBlob.w)  # Calculate the difference
+    similarity += abs(mainBlob.h - otherBlob.h)  # Calculate the difference
 
     return similarity  # Return the similarity
 
@@ -196,6 +198,6 @@ def calcMiddle(method, blob: [float]) -> [float]:
 
 # Calculate the distance between two points in 2D space
 def calcDistance(p1: [float], p2: [float]) -> float:
-    x = float(p2.x) - float(p1.x)  # Calculate the x coordinate
-    y = float(p2.y) - float(p1.y)  # Calculate the y coordinate
+    x = float(p2[0]) - float(p1[0])  # Calculate the x coordinate
+    y = float(p2[1]) - float(p1[1])  # Calculate the y coordinate
     return sqrt(x ** 2 + y ** 2)  # Calculate and return the distance

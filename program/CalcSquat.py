@@ -49,12 +49,12 @@ class CalcSquat:
             # Only count if the min and max has correct position and not to close
             if thisBlobData['max'] > thisBlobData['minDistance'] + thisBlobData['min'] + thisBlobData['offset'] * 2:
                 # Check if the blob is under the max level subtracted by the offset
-                if (blob[1] + blob[3] > thisBlobData['max'] - thisBlobData['offset'] and
+                if (blob.y + blob.h > thisBlobData['max'] - thisBlobData['offset'] and
                         self.flag == 1):
                     self.flag = -1  # Set flag to -1 / DOWN
                     print('Down')
                 # Check if the blob is above the min. value additional offset
-                elif blob[1] < thisBlobData['min'] + thisBlobData['offset']:
+                elif blob.y < thisBlobData['min'] + thisBlobData['offset']:
                     # Check if the user has been DOWN / -1
                     if self.flag == -1:
                         self.squatCount += 1  # Count one squat
