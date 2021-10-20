@@ -29,7 +29,7 @@ def motion_detection(cap):
         for contour in contours:
             # save all coordinates of found contours
             (x, y, w, h) = cv2.boundingRect(contour)
-            if cv2.contourArea(contour) < 25000:  # if area is less than, then do nothing #6000ish if video, 16000 ish if webcam.
+            if cv2.contourArea(contour) < 15000:  # if area is less than, then do nothing #6000ish if video, 16000 ish if webcam.
                 #Jo tættere på man er på kameraet jo større skal det tal være. IKKE?
                 continue
             cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)  # draw the rectangle
