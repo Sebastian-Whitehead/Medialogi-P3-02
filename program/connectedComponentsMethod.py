@@ -1,7 +1,8 @@
-import cv2
+import cv2, UI
 import numpy as np
 from ColorMask import *
 from BlobTracking import BlobTracking
+
 
 class Blob:
     def __init__(self, x, y, w, h):
@@ -10,25 +11,33 @@ class Blob:
         self.w = w
         self.h = h
 
+
 class ConnectedComponentMethod:
     def __init__(self, window_name):
         self.window_name = window_name
         self.blobTracking = BlobTracking(
-            window_name=self.window_name,
-            collisionType='dim',
-            addBlobClick=1
+            window_name=window_name,
+            collisionType='dim'
         )
 
     def runManualMethod(self, originalImage: np.ndarray, lower: tuple, upper: tuple, frameCount):
         processedImage = colorMaskManual(originalImage, lower, upper)
         return self.__continueMethod(originalImage, processedImage, frameCount)
 
+    def runLABMasking(self, originalImage: np.ndarray, frameCount):
+        processedImage = colorMaskLAB(originalImage)
+        return self.__continueMethod(originalImage, processedImage, frameCount)
 
-    def runAutoMethod(self, originalImage: np.ndarray, colSelector: str, frameCount):
-        processImage = colorMaskAuto(originalImage, colSelector)
-        return self.__continueMethod(originalImage, processImage, frameCount)
+    def runBoth(self, originalImage: np.ndarray, lower: tuple, upper: tuple, frameCount):
+        processedImage1 = colorMaskLAB(originalImage)
+        processedImage2 = colorMaskManual(originalImage, lower, upper)
+        merged = cv2.addWeighted(processedImage1, 1, processedImage2, 1, 0)
+        cv2.imshow('Merged', merged)
+        return self.__continueMethod(originalImage, merged, frameCount)
 
     def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray, frameCount):
+
+        imageH, imageW, _ = originalImage.shape
 
         num_labels, labels = cv2.connectedComponents(processedImage)
 
@@ -40,8 +49,11 @@ class ConnectedComponentMethod:
             w, h = max(nonZeroY) - x, max(nonZeroX) - y
 
             # Filter small blobs
-            if w > 25 and h > 25:
+            if 5 < w and 5 < h:
                 blobs.append(Blob(x, y, w, h))
+            if False:
+                UI.writeText(originalImage, 'Looking for green hat,', [imageW / 2, imageH / 2 - 25], 1.5, 'center')
+                UI.writeText(originalImage, 'please, stand still..', [imageW / 2, imageH / 2 + 25], 1.5, 'center')
 
         blobs = mergeBlobs(blobs, 5)
 
@@ -51,9 +63,10 @@ class ConnectedComponentMethod:
 
         self.blobTracking.run(blobs, originalImage, frameCount)
 
-        #cv2.imshow('ConnectedComponents', originalImage)
+        # cv2.imshow('ConnectedComponents', originalImage)
 
         return blobs
+
 
 def checkOverLap(obj1, obj2, threshold: int) -> bool:
     if obj1.x - threshold < obj2.x + obj2.w + threshold:
@@ -62,6 +75,7 @@ def checkOverLap(obj1, obj2, threshold: int) -> bool:
                 if obj1.h + obj1.y + threshold > obj2.y - threshold:
                     return True
     return False
+
 
 def mergeBlobs(blobs, threshold: int):
     blobs = list(set(blobs))
@@ -73,7 +87,5 @@ def mergeBlobs(blobs, threshold: int):
                     blob2.w = max(blob1.w, blob2.w)
                     blob2.y = min(blob1.y, blob2.y)
                     blob2.h = max(blob1.h, blob2.h)
-                    if blob1 in blobs:
-                        blobs.remove(blob1)
+                    if blob1 in blobs: blobs.remove(blob1)
     return blobs
-

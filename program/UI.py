@@ -3,6 +3,7 @@ import cv2
 def writeText(media, text, pos, scale, align):
     # Make new attributes for background of the text
     fontFace, fontScale, fontColor, thickness = cv2.FONT_HERSHEY_DUPLEX, scale, (0, 0, 0), 2
+    pos = [int(pos[0]), int(pos[1])]
 
     if align == 'center':
         textSize = cv2.getTextSize(text, fontFace, scale, thickness)
