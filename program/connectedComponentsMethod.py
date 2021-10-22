@@ -49,7 +49,7 @@ class ConnectedComponentMethod:
             w, h = max(nonZeroY) - x, max(nonZeroX) - y
 
             # Filter small blobs
-            if 5 < w and 5 < h:
+            if 1 < w and 1 < h:
                 blobs.append(Blob(x, y, w, h))
             if False:
                 UI.writeText(originalImage, 'Looking for green hat,', [imageW / 2, imageH / 2 - 25], 1.5, 'center')

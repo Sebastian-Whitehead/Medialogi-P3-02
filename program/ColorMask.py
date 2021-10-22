@@ -41,27 +41,16 @@ def colorMaskLAB(img: np.ndarray) -> np.ndarray:
     LAB = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     LAB = LAB[:, :, 1]
 
-    #LAB = cv2.blur(LAB, (5, 5))
-
-    cv2.imshow('Color masking massskLAB', LAB)
+    cv2.imshow('LAB channel 1', LAB)
 
     threshold = 115
     LAB[LAB < threshold] = 0
     LAB[LAB > threshold] = 255
 
-
-    kernel1 = np.array([[0, 1, 0],
-                        [0, 1, 0],
-                        [0, 0, 0]])
-    #LAB = cv2.filter2D(src=LAB, ddepth=-1, kernel=kernel1)
-
-    # Convert image to binary
-    #(thresh, LAB) = cv2.threshold(LAB, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     LAB = cv2.bitwise_not(LAB)
 
     LAB = cv2.erode(LAB, None, iterations=2)
     LAB = cv2.dilate(LAB, None, iterations=5)
 
-
-    cv2.imshow('Color masking masskLAB', LAB)
+    cv2.imshow('Color masking masking - LAB', LAB)
     return LAB
