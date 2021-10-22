@@ -7,9 +7,9 @@ from connectedComponentsMethod import ConnectedComponentMethod
 def main(video):
 
     # Make tracking methods
-    trackingMethod1 = ConnectedComponentMethod(window_name='Training Assistant Computer - HSV')
-    trackingMethod2 = ConnectedComponentMethod(window_name='Training Assistant Computer - LAB')
-    trackingMethod3 = ConnectedComponentMethod(window_name='Training Assistant Computer - Both')
+    trackingMethod1 = ConnectedComponentMethod(window_name='Training Assistant Computer - HSV') # HSV method
+    trackingMethod2 = ConnectedComponentMethod(window_name='Training Assistant Computer - LAB') # LAB method
+    trackingMethod3 = ConnectedComponentMethod(window_name='Training Assistant Computer - Both') # Merging HSV and LAB
 
     cap = cv2.VideoCapture(video)  # Get video data
 
@@ -41,28 +41,31 @@ def main(video):
             break
 
         """
-        trackingMethod1.runManualMethod(frameCopy, (40, 75, 120), (75, 190, 250), frameCount)
+        trackingMethod1.runManualMethod(frameCopy, (40, 75, 120), (75, 190, 250), frameCount)  # Run tracking method
 
         # Write counter on image
         text = 'Count: ' + str(trackingMethod1.blobTracking.calcSquat.squatCount)  # Get counter text
-        UI.writeText(frameCopy, text, (10, 50), 1, 'left')
+        UI.writeText(frameCopy, text, (10, 50), 1, 'left') # Write the current amount of squats made
 
-        cv2.imshow(trackingMethod1.window_name, frameCopy)  # Display the resulting frame
+        cv2.imshow(trackingMethod1.window_name, frameCopy)  # Show frame to the user
         """
-        
+
         """ """
-        trackingMethod2.runLABMasking(frameCopy, frameCount)
+        trackingMethod2.runLABMasking(frameCopy, frameCount) # Run tracking method
+
         # Write counter on image
         text = 'Count: ' + str(trackingMethod2.blobTracking.calcSquat.squatCount)  # Get counter text
-        UI.writeText(frameCopy, text, (10, 50), 1, 'left')
-        cv2.imshow(trackingMethod2.window_name, frameCopy)
+        UI.writeText(frameCopy, text, (10, 50), 1, 'left') # Write the current amount of squats made
+        cv2.imshow(trackingMethod2.window_name, frameCopy) # Show frame to the user
 
         """
-        trackingMethod3.runBoth(frameCopy, (40, 75, 120), (75, 190, 250), frameCount)
+        trackingMethod3.runBoth(frameCopy, (40, 75, 120), (75, 190, 250), frameCount)  # Run tracking method
+        
         # Write counter on image
         text = 'Count: ' + str(trackingMethod3.blobTracking.calcSquat.squatCount)  # Get counter text
-        UI.writeText(frameCopy, text, (10, 50), 1, 'left')
-        cv2.imshow(trackingMethod3.window_name, frameCopy)
+        UI.writeText(frameCopy, text, (10, 50), 1, 'left') # Write the current amount of squats made
+        
+        cv2.imshow(trackingMethod3.window_name, frameCopy) # Show frame to the user
         """
 
         frameCount += 1  # Skip frames
