@@ -1,15 +1,15 @@
 import cv2, UI
 from connectedComponentsMethod import ConnectedComponentMethod
 
+
 # Main function running the live video from standard camera in users computer
 # Running image processing and movement and/or color detection.
 # Counts the amount of squats made by the user and shows it in the display.
 def main(video):
-
     # Make tracking methods
-    trackingMethod1 = ConnectedComponentMethod(window_name='Training Assistant Computer - HSV') # HSV method
-    trackingMethod2 = ConnectedComponentMethod(window_name='Training Assistant Computer - LAB') # LAB method
-    trackingMethod3 = ConnectedComponentMethod(window_name='Training Assistant Computer - Both') # Merging HSV and LAB
+    trackingMethod1 = ConnectedComponentMethod(window_name='Training Assistant Computer - HSV')  # HSV method
+    trackingMethod2 = ConnectedComponentMethod(window_name='Training Assistant Computer - LAB')  # LAB method
+    trackingMethod3 = ConnectedComponentMethod(window_name='Training Assistant Computer - Both')  # Merging HSV and LAB
 
     cap = cv2.VideoCapture(video)  # Get video data
 
@@ -51,12 +51,14 @@ def main(video):
         """
 
         """ """
-        trackingMethod2.runLABMasking(frameCopy, frameCount) # Run tracking method
+        
+        trackingMethod2.runLABMasking(frameCopy, frameCount)  # Run tracking method
 
         # Write counter on image
         text = 'Count: ' + str(trackingMethod2.blobTracking.calcSquat.squatCount)  # Get counter text
-        UI.writeText(frameCopy, text, (10, 50), 1, 'left') # Write the current amount of squats made
-        cv2.imshow(trackingMethod2.window_name, frameCopy) # Show frame to the user
+        UI.writeText(frameCopy, text, (10, 50), 1, 'left')  # Write the current amount of squats made
+
+        cv2.imshow(trackingMethod2.window_name, frameCopy)  # Show frame to the user
 
         """
         trackingMethod3.runBoth(frameCopy, (40, 75, 120), (75, 190, 250), frameCount)  # Run tracking method
