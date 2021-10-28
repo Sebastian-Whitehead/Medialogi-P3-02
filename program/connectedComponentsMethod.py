@@ -5,7 +5,7 @@ from BlobTracking import BlobTracking
 
 
 class Blob:
-    def __init__(self, x, y, w, h):
+    def __init__(self, x: int, y: int, w: int, h: int):
         self.x = x
         self.y = y
         self.w = w
@@ -78,14 +78,17 @@ def checkOverLap(obj1, obj2, threshold: int) -> bool:
 
 
 def mergeBlobs(blobs, threshold: int):
-    blobs = list(set(blobs))
+    #blobs = list(set(blobs))
     for blob1 in list(blobs):
         for blob2 in list(blobs):
             if blob1 is not blob2:
                 if checkOverLap(blob1, blob2, threshold):
-                    blob2.x = min(blob1.x, blob2.x)
-                    blob2.w = max(blob1.w, blob2.w)
-                    blob2.y = min(blob1.y, blob2.y)
-                    blob2.h = max(blob1.h, blob2.h)
                     if blob1 in blobs: blobs.remove(blob1)
+                    if blob2 in blobs: blobs.remove(blob2)
+
+                    x = min(blob1.x, blob2.x)
+                    y = min(blob1.y, blob2.y)
+                    w = max(blob1.w, blob2.w)
+                    h = max(blob1.h, blob2.h)
+                    blobs.append(Blob(x, y, w, h))
     return blobs

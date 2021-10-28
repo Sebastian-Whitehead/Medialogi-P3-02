@@ -8,6 +8,8 @@ def writeText(media, text, pos, scale, align):
     if align == 'center':
         textSize = cv2.getTextSize(text, fontFace, scale, thickness)
         pos = (pos[0] - int(textSize[0][0] / 2), pos[1])
+    else:
+        pos = (pos[0], pos[1])
 
     # Write the background of the text on frame
     cv2.putText(media, text, pos, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)

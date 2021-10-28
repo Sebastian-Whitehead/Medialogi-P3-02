@@ -55,4 +55,4 @@ def main(video):
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__': main(0)
+if __name__ == '__main__': main(1)
