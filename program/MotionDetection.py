@@ -21,7 +21,7 @@ def motion_detection(cap):
         gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)  # easier to find contours in gray
         blur = cv2.GaussianBlur(gray, (5, 5), 0)  # blur to remove noise, this line might not matter for our purpose.
         _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)  # ignore black parts with thresholding
-        dilated = cv2.dilate(thresh, None, iterations=3)  # Dilates image, fill small holes. Three params(img,kernel,iterations)
+        dilated = cv2.dilate(thresh, None, iterations=7)  # Dilates image, fill small holes. Three params(img,kernel,iterations)
         # None in kernels, means default 3x3 matrix, iterations, doing it three times, so 7x7
         contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)  # find contours er lidt mere kompleks og der kan man komme ud for kun at skulle forklare grass fire
        # cv2.line(frame1, start, end, (0, 0, 255), 2)  # draws the line which the persons head has to go under
@@ -29,7 +29,7 @@ def motion_detection(cap):
         for contour in contours:
             # save all coordinates of found contours
             (x, y, w, h) = cv2.boundingRect(contour)
-            if cv2.contourArea(contour) < 16000:  # if area is less than, then do nothing #6000ish if video, 16000 ish if webcam.
+            if cv2.contourArea(contour) < 9000:  # if area is less than, then do nothing #6000ish if video, 16000 ish if webcam.
                 #Jo tættere på man er på kameraet jo større skal det tal være. IKKE?
                 continue
             cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)  # draw the rectangle
@@ -58,11 +58,12 @@ def motion_detection(cap):
                 if flag == 0:
                     flag = 1
 
-        #cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2) # draws contours around moving object
+        cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2) # draws contours around moving object
 
 
         cv2.imshow('feed', frame1)  # show the frame
         cv2.imshow('dil', dilated)
+
         frame1 = frame2
         ret, frame2 = cap.read()  # frame will get the next frame in the video (via "cap"). "Ret" will obtain return value from getting the video frame.
 
