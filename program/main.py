@@ -1,4 +1,4 @@
-import cv2, UI
+import cv2, TonkoUI
 from connectedComponentsMethod import ConnectedComponentMethod
 
 
@@ -40,9 +40,14 @@ def main(video):
         
         trackingMethod.runLABMasking(frameCopy, frameCount)  # Run tracking method
 
+
+        # Lower bar UI
+#        TonkoUI.showSquatCountVisual(media=frameCopy, squatCount=trackingMethod.blobTracking.calcSquat.squatCount, squatTotal=10)
+#        TonkoUI.showSquatCountText(media=frameCopy, squatCount=trackingMethod.blobTracking.calcSquat.squatCount, squatTotal=10)
+
         # Write counter on image
         text = 'Count: ' + str(trackingMethod.blobTracking.calcSquat.squatCount)  # Get counter text
-        UI.writeText(frameCopy, text, (10, 50), 1, 'left')  # Write the current amount of squats made
+        # UI.writeText(frameCopy, text, (10, 50), 1, 'left')  # Write the current amount of squats made
 
         cv2.imshow(trackingMethod.window_name, frameCopy)  # Show frame to the user
 
