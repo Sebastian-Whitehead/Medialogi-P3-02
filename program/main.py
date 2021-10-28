@@ -1,20 +1,29 @@
-import cv2, UI
 from connectedComponentsMethod import ConnectedComponentMethod
+from SelfmadeBlobDetection import *
+from SimpleBlobDetector import *
+from MotionDetection import motion_detection
+
+# For handling the sliders.
+# This should stay as it is ..
+def nothing(x):
+    pass
 
 
 # Main function running the live video from standard camera in users computer
 # Running image processing and movement and/or color detection.
 # Counts the amount of squats made by the user and shows it in the display.
-def main(video):
-    # Make tracking methods
-    trackingMethod = ConnectedComponentMethod(window_name='Training Assistant Computer - LAB')  # LAB method
+def main(trackingMethod):
+    # Name of window name pop-up
+    window_name = 'Training Assistent Computer'
 
-    cap = cv2.VideoCapture(video)  # Get video data
+    # Get video data
+    cap = cv2.VideoCapture(0)
 
     # Check if the camera is open on the users computer
     if not cap.isOpened():
         print("Cannot open camera")
-        exit()  # Exit program on error
+        # Exit program on error
+        exit()
     else:
         # Get vcap property
         frameWidth = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float width
@@ -23,36 +32,69 @@ def main(video):
 
         # Print camera information
         print('Camera connected:')
-        print('Dim:', frameWidth, 'x', frameHeight, 'fps:', int(frameFps))
+        print('Dim:', frameWidth, 'x', frameHeight, 'fps:', frameFps)
 
-    frameCount = 0  # Frame counter
+    # Make and append slider to window frame
+    cv2.namedWindow(window_name)
+    cv2.createTrackbar('Lower threshold', window_name, 1, 10, nothing)
+    cv2.createTrackbar('Upper threshold', window_name, 1, 10, nothing)
 
     # Run video
     while True:
-        ret, originalFrame = cap.read()  # Capture frame-by-frame
-        originalFrame = cv2.flip(originalFrame, 1)  # Flip frame to make it seem like a mirror
-        frameCopy = originalFrame.copy()  # Make a copy of the originalFrame
+        # Capture frame-by-frame
+        ret, originalFrame = cap.read()
+
+        # Flip frame to make it seem like a mirror
+        originalFrame = cv2.flip(originalFrame, 1)
+
+        # Make a copy of the originalFrame
+        frameCopy = originalFrame.copy()
 
         # if frame is read correctly ret is True
         if not ret:
             print("Can't receive frame. Exiting ...")
             break
-        
-        trackingMethod.runLABMasking(frameCopy, frameCount)  # Run tracking method
+
+        # Manual color thresholding
+        # Manual Thresholding 1
+        lower = (48, 30, 104)
+        upper = (78, 122, 255)
+        # Manual Thresholding 2
+        lower = (53, 74, 68)
+        upper = (121, 255, 255)
+
+        # Color Selector type to automatic color masking
+        colSelector = 'greenGlove'
+
+        # Pick which blob detector method to use
+        # blobDetectionManual(frameCopy, lower, upper)
+        #SimpleBlobDetectorManual(frameCopy, lower, upper)
+        #connectedComponentsMethodManual(frameCopy, lower, upper)
+        #motion_detection(cap)
+        trackingMethod.runManualMethod(frameCopy, lower, upper)
 
         # Write counter on image
-        text = 'Count: ' + str(trackingMethod.blobTracking.calcSquat.squatCount)  # Get counter text
-        UI.writeText(frameCopy, text, (10, 50), 1, 'left')  # Write the current amount of squats made
+        # Get counter text
+        feedbackText = 'Count: ' + str(0)
+        # Make new attributes for background of the text
+        textPosition, fontFace, fontScale, fontColor, thickness = (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1.5, (0, 0, 0), 2
+        # Write the background of the text on frame
+        cv2.putText(frameCopy, feedbackText, textPosition, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)
+        # Change attributes to front view of text
+        fontColor, thickness = (255, 255, 255), 1
+        # Write front view of text on frame
+        cv2.putText(frameCopy, feedbackText, textPosition, fontFace, fontScale, fontColor, thickness, cv2.LINE_AA)
 
-        cv2.imshow(trackingMethod.window_name, frameCopy)  # Show frame to the user
-
-        frameCount += 1  # Skip frames
-
-        if cv2.waitKey(15) == ord('q'): break
+        # Display the resulting frame
+        cv2.imshow(window_name, frameCopy)
+        if cv2.waitKey(15) == ord('q'):
+            break
 
     # When everything done, release the capture
     originalFrame.release()
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__': main(0)
+if __name__ == '__main__':
+    CCM = ConnectedComponentMethod()
+    main(CCM)
