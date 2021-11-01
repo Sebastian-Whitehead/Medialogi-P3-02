@@ -9,6 +9,7 @@ class CalcSquat:
         self.blobData = dict()  # Make dict for holding squat data
         self.squatCount = 0  # Count how many squats the user have made
         self.direction = True  # Flag holder for users current position
+        self.position = (0, 0)  # Current (x,y) position
 
     def run(self, labelBlobs, media):
         if self.squatCount < 2: self.getData(labelBlobs)  # Get calculate squat data (CalcSquat)
@@ -49,6 +50,12 @@ class CalcSquat:
         for n, blobLabel in enumerate(blobLabels):
             blob = blobLabels[blobLabel]  # Retrieve blob values to blob
             thisBlobData = self.blobData[blobLabel]  # Get the blob data from the dataset
+
+            # set the position of the blob to center x and current y coordinate
+            if self.direction:
+                self.position = (blob.x + (blob.w / 2), blob.y + blob.h)
+            else:
+                self.position = (blob.x + (blob.w / 2), blob.y)
 
             # Only count if the min and max has correct position and not to close
             # if thisBlobData['max'] > thisBlobData['minDistance'] + thisBlobData['min'] + thisBlobData['offset'] * 2: # (With height)
