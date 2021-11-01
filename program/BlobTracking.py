@@ -23,6 +23,8 @@ class BlobTracking():
         self.resetStartFrame = 0  # Holder for what frame to reset
 
         self.labelBlobs = {}  # Dict for labeled blobs
+        self.archivedBlobs = {}
+
         self.clickable = True  # Holder for only clicking the screen once
 
         cv2.namedWindow(self.window_name)  # Get the window the tracking should be on
@@ -122,14 +124,25 @@ class BlobTracking():
         if len(self.labelBlobs):
             self.newLabelBlobs = {}  # Make a dict for the next blobs
 
+            self.unusedLabels = self.labelBlobs.copy()
+            print(self.labelBlobs)
+
             # Loop all previous blobs
             for j, prevBlob in enumerate(self.labelBlobs):
                 prevLabel = prevBlob  # Save the label of this blob
                 prevBlob = self.labelBlobs[prevLabel]  # Get the coordination of this blob
                 self.__checkScore(prevLabel, prevBlob)  # Check current blobs for similarity score
 
+            if not len(self.unusedLabels) == 0:
+                self.archivedBlobs = self.unusedLabels.copy()
+                print(self.unusedLabels)
+                print(f"Unused blobs remaining \n")
+            else:
+                self.archivedBlobs = {}
+
             # Return all the next blobs with their labels and coordination
             self.labelBlobs = self.newLabelBlobs
+            self.labelBlobs = {**self.labelBlobs, **self.archivedBlobs}
 
     # Compare all blobs with each labeled blobs for a closest match
     def __checkScore(self, prevLabel, prevBlob):
@@ -152,6 +165,7 @@ class BlobTracking():
             if calcScore(prevBlob, newBlob, method=self.colType) < self.maxScore:
                 # Mark the closest blob its buddy with the same label
                 self.newLabelBlobs[prevLabel] = newBlob
+                self.unusedLabels.pop(prevLabel)
 
     # Set the labels of blobs width predetermined positions relative to each other
     def __setLabelsByPosition(self):
