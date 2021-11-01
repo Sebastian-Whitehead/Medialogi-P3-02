@@ -37,9 +37,12 @@ class CalcSquat:
                 thisBlobData['min'] = blob.y  # Set the top of the blob to min
                 thisBlobData['max'] = blob.y + blob.h  # Set the bottom of the blob to max
 
-            # Get the offset for the thresholds to give some extra space
-            thisBlobData['offset'] = int(thisBlobData['max'] / thisBlobData['min'] * 7)  # Min / max - ratio
-            thisBlobData['minDistance'] = blob.h  # Min distance to count squat is the height of the head
+                thisBlobData['minDistance'] = blob.h  # Min distance to count squat is the height of the head
+
+            #Divide by zero protection
+            if not thisBlobData['min'] == 0:
+                thisBlobData['offset'] = int(thisBlobData['max'] / thisBlobData['min'] * 7)  # Min / max - ratio
+
 
     # Count the squat using the min. and max. thresholds
     def countSquat(self, blobLabels):
