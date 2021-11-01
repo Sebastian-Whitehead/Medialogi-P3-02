@@ -6,14 +6,12 @@ clip = cv2.VideoCapture(0)
 
 def motion_detection(cap):
     count = 0  # count squats
+    direction = True
     flag = 0
     start = (0, 307)  # line start pos
     end = (360, 307)  # line end pos
     liney = 1 #set line for squat acceptance
     linecheck = 1 #check how deep the squat is on the first squat (calibration)
-    liner = 1
-    linercheck = 100000
-
 
     ret, frame1 = cap.read()
     ret, frame2 = cap.read()
@@ -34,6 +32,7 @@ def motion_detection(cap):
             if cv2.contourArea(contour) < 17000:  # if area is less than, then do nothing #6000ish if video, 16000 ish if webcam.
                 #Jo tættere på man er på kameraet jo større skal det tal være. IKKE?
                 continue
+            #Draws line above users head
             left = (int(x+(w/2)-100), y)
             right = (int(x+(w/2)+100), y)
             cv2.line(frame1, left, right, (0, 255, 0), 2)
@@ -41,38 +40,30 @@ def motion_detection(cap):
             cv2.putText(frame1, "status: {}".format("Movement"), (10, 50), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (255, 0, 0), 2)  # Text to show if we detect movement
 
-            #Makes bottom line
-            if y > linecheck and count == 0: #if flag is not -1, and y is higher than linecheck
+
+            # Makes bottom line
+            if y > linecheck and count == 0:
                 linecheck = y # make linecheck same as y
-                liney = y-20 # set the line a less than y,
+                liney = y-20  # set the line a less than y,
                 start1 = (0, liney)  # line1 start pos
                 end1 = (frame1.shape[1], liney)  # line1 end pos
 
+            #Checks if youre below the bottom line
+            if y > liney and direction == False:
+                direction = True
+                print(direction)
 
-            #Makes top line
-            if y < linercheck and count == 0:
-                linercheck = y
-                liner = y+20
-                start2 = (0, liner)
-                end2 = (frame1.shape[1], liner)
+            #Checks if youre above the top line
+            if y < liney and direction == True:
+                direction = False
+                count += 1
+                print(count)
+                print(direction)
 
-
-            if y > liney and flag == 1:  # Checks if we are under the line, accepted as a squat.
-                flag = -1
-            elif y < liney:
-                if flag == -1:
-                    count += 1
-                    print(count)
-                    flag = 0
-                if flag == 0:
-                    flag = 1
-
+        #Draws bottom line
         if "start1" and "end1" in locals():
-            cv2.line(frame1, start1, end1, (255, 0, 0), 2)  # draws the line which the persons head has to go under
+            cv2.line(frame1, start1, end1, (255, 255, 0), 2)  # draws the line which the persons head has to go under
 
-
-        if "start2" and "end2" in locals():
-            cv2.line(frame1, start2, end2, (255, 0, 0), 2)  # draws the line which the persons head has to go over
 
         cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2) # draws contours around moving object
 
@@ -92,7 +83,7 @@ def motion_detection(cap):
 
 
 
-for i in range(5, 0, -1):
-    time.sleep(1)
-    print(i)
+#for i in range(5, 0, -1):
+ #   time.sleep(1)
+  #  print(i)
 motion_detection(clip)
