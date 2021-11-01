@@ -6,7 +6,6 @@ from PIL import Image
 from PIL import ImageTk
 from connectedComponentsMethod import ConnectedComponentMethod
 
-
 def runLowerBarUI(squatTotal: int, setTotal: int):
     # Get video data
     cap = cv2.VideoCapture(0)
@@ -45,6 +44,8 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
     HUDWindow = tk.Frame(window, width=600, height=100)
     HUDWindow.grid(row=600, column=0, padx=10, pady=2)
 
+    showSquatCountVisual(HUDWindow, 0, squatTotal, 0, setTotal)
+
     # Update video frame
     def show_video():
         _, frame = cap.read()
@@ -52,11 +53,13 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
 
         # Tracking
         trackingMethod.runLABMasking(frame)  # Run tracking method
-        squatCount = trackingMethod.blobTracking.calcSquat.squatCount # Get squats amount counted
         #squatCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
 
-        # Visualize squats
-        showSquatCountVisual(HUDWindow, squatCount, squatTotal, 0, setTotal)
+        if trackingMethod.blobTracking.calcSquat.addSquat:
+            # Visualize squats
+            squatCount = trackingMethod.blobTracking.calcSquat.squatCount # Get squats amount counted
+            showSquatCountVisual(HUDWindow, squatCount, squatTotal, 0, setTotal)
+            trackingMethod.blobTracking.calcSquat.addSquat = False
 
         # Show image
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
@@ -75,9 +78,9 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
 
 # Show the counter for amount of squats made
 def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount:int, setTotal: int):
+
     # Iterate total squats
     for i in range(squatTotal):
-
         # Turn all squats made ON
         if i < squatCount:
             counterImage = Image.open('TestImages/counterOn.png')

@@ -10,6 +10,7 @@ class CalcSquat:
         self.squatCount = 0  # Count how many squats the user have made
         self.direction = True  # Flag holder for users current position
         self.position = (0, 0)  # Current (x,y) position
+        self.addSquat = False
 
     def run(self, labelBlobs, media):
         if self.squatCount < 2: self.getData(labelBlobs)  # Get calculate squat data (CalcSquat)
@@ -71,9 +72,9 @@ class CalcSquat:
                 elif blob.y < thisBlobData['min'] + thisBlobData['offset'] and self.direction is False:
                     # Check if the user has been DOWN / False
                     self.squatCount += 1  # Count one squat
+                    self.addSquat = True
                     print('Squats:', self.squatCount)  # Print total counted squats
                     self.direction = True  # Set flag to Up / True
-
 
 if __name__ == '__main__':
     pass
