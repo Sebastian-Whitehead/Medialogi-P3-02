@@ -6,10 +6,8 @@ from PIL import Image
 from PIL import ImageTk
 from connectedComponentsMethod import ConnectedComponentMethod
 
-cap = None
 
-
-def runLowerBarUI(squatTotal: int, nrset: int):
+def runLowerBarUI(squatTotal: int, setTotal: int):
     # Get video data
     cap = cv2.VideoCapture(0)
 
@@ -37,9 +35,10 @@ def runLowerBarUI(squatTotal: int, nrset: int):
     imageFrame.grid(row=0, column=0, padx=10, pady=2)  # Grid for video window
 
     # Make video label
-    lmain = tk.Label(imageFrame)
+    lmain = tk.Label(imageFrame) # Make label
     lmain.grid(row=0, column=0)  # Insert video label
 
+    # Set the tracking method
     trackingMethod = ConnectedComponentMethod(window_name=window.title())  # LAB method
 
     # Make HUD window
@@ -53,7 +52,11 @@ def runLowerBarUI(squatTotal: int, nrset: int):
 
         # Tracking
         trackingMethod.runLABMasking(frame)  # Run tracking method
-        squatCount = trackingMethod.blobTracking.calcSquat.squatCount
+        squatCount = trackingMethod.blobTracking.calcSquat.squatCount # Get squats amount counted
+        #squatCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
+
+        # Visualize squats
+        showSquatCountVisual(HUDWindow, squatCount, squatTotal, 0, setTotal)
 
         # Show image
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
@@ -62,35 +65,41 @@ def runLowerBarUI(squatTotal: int, nrset: int):
         lmain.imgtk = imgtk
         lmain.configure(image=imgtk)
 
-        # Visualize squats
-        showSquatCountVisual(HUDWindow, squatCount, squatTotal)
-
         # Update frame
         lmain.after(10, show_video)
 
-    show_video()
-    window.mainloop()  # Starts GUI
+    show_video()  # Show video
+
+    window.mainloop()  # Start GUI
 
 
-def showSquatCountVisual(window, squatCount: int, squatTotal: int):
+# Show the counter for amount of squats made
+def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount:int, setTotal: int):
+    # Iterate total squats
     for i in range(squatTotal):
+
+        # Turn all squats made ON
         if i < squatCount:
             counterImage = Image.open('TestImages/counterOn.png')
         else:
             counterImage = Image.open('TestImages/counterOff.png')
 
-        counterImage = ImageTk.PhotoImage(counterImage)
+        counterImage = ImageTk.PhotoImage(counterImage)  # Get image from folder
 
-        counterLabel = tk.Label(window, image=counterImage)
-        counterLabel.image = counterImage
+        # Make label for counter image
+        counterLabel = tk.Label(window, image=counterImage)  # Make label
+        counterLabel.image = counterImage  # Change image
+        counterLabel.grid(row=0, column=i)  # Insert into window
 
-        counterLabel.grid(row=0, column=i)
+    # Write squats made and total onto window
+    writeSquats = tk.Label(window, text=f'Squats: {squatCount}/{squatTotal}')  # Make label
+    writeSquats.grid(row=1, column=0)  # Insert into window
 
-    w = tk.Label(window, text=f'{squatCount}/{squatTotal}')
-    w.grid(row=1, column=0)
+    # Write sets made and total onto window
+    writeSquats = tk.Label(window, text=f'Sets: {setCount}/{setTotal}')  # Make label
+    writeSquats.grid(row=1, column=1)  # Insert into window
 
 
 if __name__ == '__main__':
     # Capture and update video frames
-    cap = cv2.VideoCapture(0)
-    runLowerBarUI(cap, 4, 10)
+    runLowerBarUI(4, 10)
