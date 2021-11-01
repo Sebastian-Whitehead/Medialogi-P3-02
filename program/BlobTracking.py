@@ -1,6 +1,6 @@
-import random
+import random, keyboard
 
-import cv2, UI
+import cv2, frameUI
 from math import sqrt
 from CalcSquat import CalcSquat
 
@@ -31,30 +31,37 @@ class BlobTracking():
         self.calcSquat = CalcSquat()  # Initialize a CalcSquat object
         self.addBlobClick = 1  # Set button click to add blob labels to standard (1)
 
+        self.frameCount = 0
+
         self.id = random.random()
 
     def setAddBlobClick(self, num: int):
         self.addBlobClick = num
 
     # Run the blob tracking
-    def run(self, blobs, media, frameCount):
+    def run(self, blobs, media):
         h, w, _ = media.shape
 
         self.__setBlobs(blobs)  # Set the current frames blobs
         self.__trackBlobs()  # Analyze the blobs
 
+        # if key 'space' is pressed
+        if keyboard.is_pressed('space'):
+            print(f'Start program!')
+            self.resetStartFrame = self.frameCount + 30 * self.resetTimer  # Reset system
+
         # Only show data if the counter is off
-        self.frameCount = frameCount  # Set the current frame count
-        if self.resetStartFrame - 1 < frameCount:
+        self.frameCount += 1  # Set the current frame count
+        if self.resetStartFrame - 1 < self.frameCount:
             if 0 < len(self.labelBlobs):
                 self.calcSquat.run(self.labelBlobs, media)  # Run the calculate squat object
             else:
-                UI.writeText(media, "Can't find hat..", [h, w], 1.5, 'center')
+                frameUI.writeText(media, "Can't find hat..", [h, w], 1.5, 'center', (255, 255, 255))
         # Show counter and reset blob data, and labels
         else:
             pos = (int(media.shape[1] / 2), int(media.shape[0] / 2))
-            text = 'Start in: ' + str(int((self.resetStartFrame - frameCount) / 30))  # Set the position of the text
-            UI.writeText(media, text, pos, 1, 'center')  # Write the text on the image
+            text = 'Start in: ' + str(int((self.resetStartFrame - self.frameCount) / 30))  # Set the position of the text
+            frameUI.writeText(media, text, pos, 1, 'center', (255, 255, 255))  # Write the text on the image
             self.calcSquat.__init__()  # Reset calculating squat data
             self.__setLabelsByPosition()  # Set labels on blobs
 
@@ -102,12 +109,9 @@ class BlobTracking():
             # Go through each labeled blob
             for blob in self.labelBlobs:
                 values = self.labelBlobs[blob]  # Get the coordination of the blob
-                text = blob  # Get the label using the index
-                # Make new attributes for background of the text
-                face, scale, color, thickness = cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 0, 255), 1
-                pos = (values.x, values.y - 5)
-                # Write the background of the text on frame
-                cv2.putText(media, text, pos, face, scale, color, thickness, cv2.LINE_AA)
+                text = blob.title()  # Get the label using the index
+                pos = (values.x + int(values.w / 2), values.y - 5)
+                frameUI.writeText(media, text, pos, 1, 'center', (0, 0, 255))
 
         return media  # Return the media/frame
 

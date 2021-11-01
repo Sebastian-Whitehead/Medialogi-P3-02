@@ -1,4 +1,4 @@
-import cv2, UI
+import cv2, frameUI
 import numpy as np
 from ColorMask import *
 from BlobTracking import BlobTracking
@@ -20,22 +20,22 @@ class ConnectedComponentMethod:
             collisionType='dim'
         )
 
-    def runManualMethod(self, originalImage: np.ndarray, lower: tuple, upper: tuple, frameCount):
+    def runManualMethod(self, originalImage: np.ndarray, lower: tuple, upper: tuple):
         processedImage = colorMaskManual(originalImage, lower, upper)
-        return self.__continueMethod(originalImage, processedImage, frameCount)
+        return self.__continueMethod(originalImage, processedImage)
 
-    def runLABMasking(self, originalImage: np.ndarray, frameCount):
+    def runLABMasking(self, originalImage: np.ndarray):
         processedImage = colorMaskLAB(originalImage)
-        return self.__continueMethod(originalImage, processedImage, frameCount)
+        return self.__continueMethod(originalImage, processedImage)
 
-    def runBoth(self, originalImage: np.ndarray, lower: tuple, upper: tuple, frameCount):
+    def runBoth(self, originalImage: np.ndarray, lower: tuple, upper: tuple):
         processedImage1 = colorMaskLAB(originalImage)
         processedImage2 = colorMaskManual(originalImage, lower, upper)
         merged = cv2.addWeighted(processedImage1, 1, processedImage2, 1, 0)
         cv2.imshow('Merged', merged)
-        return self.__continueMethod(originalImage, merged, frameCount)
+        return self.__continueMethod(originalImage, merged)
 
-    def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray, frameCount):
+    def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray):
 
         imageH, imageW, _ = originalImage.shape
 
@@ -52,16 +52,19 @@ class ConnectedComponentMethod:
             if 1 < w and 1 < h:
                 blobs.append(Blob(x, y, w, h))
             if False:
-                UI.writeText(originalImage, 'Looking for green hat,', [imageW / 2, imageH / 2 - 25], 1.5, 'center')
-                UI.writeText(originalImage, 'please, stand still..', [imageW / 2, imageH / 2 + 25], 1.5, 'center')
+                frameUI.writeText(originalImage, 'Looking for green hat,', [imageW / 2, imageH / 2 - 25], 1.5, 'center', (255, 255, 255))
+                frameUI.writeText(originalImage, 'please, stand still..', [imageW / 2, imageH / 2 + 25], 1.5, 'center', (255, 255, 255))
 
         blobs = mergeBlobs(blobs, 5)
 
         for blob in blobs:
             pos1, pos2 = (blob.x, blob.y), (blob.x + blob.w, blob.y + blob.h)
-            originalImage = cv2.rectangle(originalImage, pos1, pos2, (0, 0, 255), 1)
+            #originalImage = cv2.rectangle(originalImage, pos1, pos2, (0, 0, 255), 1) # Draw border on blobs
 
-        self.blobTracking.run(blobs, originalImage, frameCount)
+            pos2 = (blob.x + blob.w, blob.y)
+            originalImage = cv2.line(originalImage, pos1, pos2, (0, 0, 255))
+
+        self.blobTracking.run(blobs, originalImage)
 
         # cv2.imshow('ConnectedComponents', originalImage)
 

@@ -1,66 +1,76 @@
 import numpy as np
 import cv2
 import tkinter as tk
+from tkinter import ttk
 from PIL import Image
 from PIL import ImageTk
+from connectedComponentsMethod import ConnectedComponentMethod
 
-def runLowerBarUI(media, squatCount: int, squatTotal: int, repCount: int, repTotal: int):
-    showSquatCountVisual(media, squatCount, squatTotal)
-    showCountText(media, squatCount, squatTotal)
-    showCountText(media, repCount, repTotal)
-
-def showSquatCountVisual(media, squatCount: int, squatTotal: int):
-    pass
-
-def showCountText(media, count: int, total: int):
-    pass
-
-if __name__ == '__main__':
+def runLowerBarUI(cap, squatCount: int, squatTotal: int):
     # Set up GUI
     window = tk.Tk()  # Makes main window
-    window.wm_title("Digital Microscope")
-    window.config(background="#FFFFFF")
+    window.wm_title('Training Assistant Computer - LAB')  # Set window title
+    window.config(background="#FFFFFF")  # Set background color
 
-    # Graphics window
-    imageFrame = tk.Frame(window, width=600, height=500)
-    imageFrame.grid(row=0, column=0, padx=10, pady=2)
+    # Make video frame
+    imageFrame = tk.Frame(window, width=600, height=500)  # Dimensions for video window
+    imageFrame.grid(row=0, column=0, padx=10, pady=2)  # Grid for video window
 
-    # Capture video frames
+    # Make video label
     lmain = tk.Label(imageFrame)
-    lmain.grid(row=0, column=0)
-    cap = cv2.VideoCapture(0)
+    lmain.grid(row=0, column=0)  # Insert video label
 
+    trackingMethod = ConnectedComponentMethod(window_name=window.title())  # LAB method
 
-    def show_frame():
+    # Make HUD window
+    HUDWindow = tk.Frame(window, width=600, height=100)
+    HUDWindow.grid(row=600, column=0, padx=10, pady=2)
+
+    # Update video frame
+    def show_video():
         _, frame = cap.read()
         frame = cv2.flip(frame, 1)
+
+        # Tracking
+        trackingMethod.runLABMasking(frame)  # Run tracking method
+        squatCount = trackingMethod.blobTracking.calcSquat.squatCount
+
+        # Show image
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
         imgtk = ImageTk.PhotoImage(image=img)
         lmain.imgtk = imgtk
         lmain.configure(image=imgtk)
-        lmain.after(10, show_frame)
 
-        # Slider window (slider controls stage position)
+        # Visualize squats
+        showSquatCountVisual(HUDWindow, squatCount, squatTotal)
 
+        # Update frame
+        lmain.after(10, show_video)
 
-    sliderFrame = tk.Frame(window, width=600, height=100)
-    sliderFrame.grid(row=600, column=0, padx=10, pady=2)
+    show_video()
 
-    show_frame()  # Display 2
     window.mainloop()  # Starts GUI
-    """
-    root = Tk()
-    frm = ttk.Frame(root, padding=10)
-    frm.grid()
-    ttk.Label(frm, text="Hello World!").grid(column=0, row=0)
-    ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=0)
-    root.mainloop()
 
-    root = Tk()
-    canvas = Canvas(root, width=300, height=300)
-    canvas.pack()
-    img = PhotoImage(file="ball.ppm")
-    canvas.create_image(20, 20, anchor=NW, image=img)
-    mainloop()
-    """
+def showSquatCountVisual(window, squatCount: int, squatTotal: int):
+    for i in range(squatTotal):
+        if i < squatCount:
+            counterImage = Image.open('TestImages/counterOn.png')
+        else:
+            counterImage = Image.open('TestImages/counterOff.png')
+        # counterImage = counterImage.resize((50, 50))
+        counterImage = ImageTk.PhotoImage(counterImage)
+
+        counterLabel = tk.Label(window, image=counterImage)
+        counterLabel.image = counterImage
+
+        counterLabel.grid(row=0, column=i)
+
+    w = tk.Label(window, text=f'{squatCount}/{squatTotal}')
+    w.grid(row=1, column=0)
+
+
+if __name__ == '__main__':
+    # Capture and update video frames
+    cap = cv2.VideoCapture(0)
+    runLowerBarUI(cap, 4, 10)

@@ -1,4 +1,4 @@
-import json, cv2, UI
+import json, cv2, frameUI
 
 
 # Class for calculating and counting a squat with different blobs
@@ -13,7 +13,7 @@ class CalcSquat:
     def run(self, labelBlobs, media):
         if self.squatCount < 2: self.getData(labelBlobs)  # Get calculate squat data (CalcSquat)
         self.countSquat(labelBlobs)  # Count each squat (CalcSquat)
-        # UI.drawData(media, self.blobData)  # Draw the guide lines (CalcSquat)
+        frameUI.drawData(media, self.blobData, self.direction)  # Draw the guide lines (CalcSquat)
 
     # Run the program getting the min. and max. value of the blob
     def getData(self, labelBlobs):
@@ -28,13 +28,15 @@ class CalcSquat:
                 thisBlobData = self.blobData[label]  # Get current blob from data
                 # Compare current and new input. Use the min. and max.
                 thisBlobData['min'] = min(thisBlobData['min'], blob.y)
-                thisBlobData['max'] = max(thisBlobData['max'], blob.y + blob.h)
+                # thisBlobData['max'] = max(thisBlobData['max'], blob.y + blob.h) # (with height)
+                thisBlobData['max'] = max(thisBlobData['max'], blob.y)
                 self.blobData[label] = thisBlobData  # Save the blob data
             else:
                 self.blobData[label] = dict()  # Make dict for the blob
                 thisBlobData = self.blobData[label]
                 thisBlobData['min'] = blob.y  # Set the top of the blob to min
-                thisBlobData['max'] = blob.y + blob.h  # Set the bottom of the blob to max
+                # thisBlobData['max'] = blob.y + blob.h  # Set the bottom of the blob to max (with height)
+                thisBlobData['max'] = blob.y  # Set the bottom of the blob to max
 
             # Get the offset for the thresholds to give some extra space
             thisBlobData['offset'] = int(thisBlobData['max'] / thisBlobData['min'] * 7)  # Min / max - ratio
@@ -49,7 +51,8 @@ class CalcSquat:
             thisBlobData = self.blobData[blobLabel]  # Get the blob data from the dataset
 
             # Only count if the min and max has correct position and not to close
-            if thisBlobData['max'] > thisBlobData['minDistance'] + thisBlobData['min'] + thisBlobData['offset'] * 2:
+            # if thisBlobData['max'] > thisBlobData['minDistance'] + thisBlobData['min'] + thisBlobData['offset'] * 2: # (With height)
+            if thisBlobData['max'] > thisBlobData['minDistance'] + thisBlobData['min'] + thisBlobData['offset']:
                 # Check if the blob is under the max level subtracted by the offset
                 if blob.y + blob.h > thisBlobData['max'] - thisBlobData['offset'] and self.direction:
                     self.direction = False  # Set flag to False / DOWN
