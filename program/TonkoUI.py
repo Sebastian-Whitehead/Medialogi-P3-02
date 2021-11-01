@@ -6,7 +6,27 @@ from PIL import Image
 from PIL import ImageTk
 from connectedComponentsMethod import ConnectedComponentMethod
 
-def runLowerBarUI(cap, squatCount: int, squatTotal: int):
+cap = None
+
+
+def runLowerBarUI(squatTotal: int, nrset: int):
+    # Get video data
+    cap = cv2.VideoCapture(0)
+
+    # Check if the camera is open on the users computer
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()  # Exit program on error
+    else:
+        # Get vcap property
+        frameWidth = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float width
+        frameHeight = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)  # float height
+        frameFps = cap.get(cv2.CAP_PROP_FPS)  # float fps
+
+        # Print camera information
+        print('Camera connected:')
+        print('Dim:', frameWidth, 'x', frameHeight, 'fps:', int(frameFps))
+
     # Set up GUI
     window = tk.Tk()  # Makes main window
     window.wm_title('Training Assistant Computer - LAB')  # Set window title
@@ -49,8 +69,8 @@ def runLowerBarUI(cap, squatCount: int, squatTotal: int):
         lmain.after(10, show_video)
 
     show_video()
-
     window.mainloop()  # Starts GUI
+
 
 def showSquatCountVisual(window, squatCount: int, squatTotal: int):
     for i in range(squatTotal):
@@ -58,7 +78,7 @@ def showSquatCountVisual(window, squatCount: int, squatTotal: int):
             counterImage = Image.open('TestImages/counterOn.png')
         else:
             counterImage = Image.open('TestImages/counterOff.png')
-        # counterImage = counterImage.resize((50, 50))
+
         counterImage = ImageTk.PhotoImage(counterImage)
 
         counterLabel = tk.Label(window, image=counterImage)

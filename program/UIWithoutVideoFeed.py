@@ -2,14 +2,22 @@ import numpy as np
 import cv2
 import tkinter as tk
 from PIL import Image, ImageTk
-
+import TonkoUI
 
 root = tk.Tk()
-root.minsize(300,200)
-window1 = tk.Canvas(root, width=600, height=500, relief='raised')
 
 nr_of_squats = tk.Entry(root)
 nr_of_sets = tk.Entry(root)
+
+def make_frame():
+    root.minsize(300,200)
+    window1 = tk.Canvas(root, width=600, height=500, relief='raised')
+
+    labels()
+    accept = tk.Button(text='OK!', command=squats, bg='blue', fg='white', width=10)
+    accept.grid(row=7, column=0)
+
+    root.mainloop()  # Starts GUI
 
 def labels():
     squats_label = tk.Label(root, text='Input nr of squats you wish to do:')
@@ -27,7 +35,7 @@ def labels():
 
 def squats():
     nr = nr_of_squats.get()
-    nrset= nr_of_sets.get()
+    nrset = nr_of_sets.get()
     info = tk.Label(root, text=('You wish to do ' + nr +' squats each set?'))
     info1 = tk.Label(root, text=('You wish to do ' + nrset + ' sets?'))
     info.grid(row=8, column=0)
@@ -39,12 +47,11 @@ def squats():
         begin.grid(row=10, column=0)
 
 def run_tonkos():
-    print("tonkos program")
+    nr = int(nr_of_squats.get())
+    nrset = int(nr_of_sets.get())
+    root.destroy()
+    print(nr, nrset)
+    TonkoUI.runLowerBarUI(nr, nrset)
 
-
-labels()
-accept = tk.Button(text='OK!', command=squats, bg='blue', fg='white', width=10)
-accept.grid(row=7, column=0)
-
-
-root.mainloop()  #Starts GUI
+if __name__ == '__main__':
+    make_frame()

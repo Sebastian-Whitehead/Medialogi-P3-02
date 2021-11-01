@@ -134,8 +134,8 @@ class BlobTracking():
 
             if not len(self.unusedLabels) == 0:
                 self.archivedBlobs = self.unusedLabels.copy()
-                print(self.unusedLabels)
-                print(f"Unused blobs remaining \n")
+                # print(self.unusedLabels)
+                # print(f"Unused blobs remaining \n")
             else:
                 self.archivedBlobs = {}
 
