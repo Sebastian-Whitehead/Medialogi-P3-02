@@ -68,11 +68,11 @@ def squats():
 def run_tonkos():
     print("tonkos program")
 
+if __name__ == '__main__':
+    labels()
+    accept = tk.Button(text='OK!', command=squats, bg='blue', fg='white', width=10)
+    accept.grid(row=7, column=0)
 
-labels()
-accept = tk.Button(text='OK!', command=squats, bg='blue', fg='white', width=10)
-accept.grid(row=7, column=0)
 
-
-show_frame()  #Display 2
-root.mainloop()  #Starts GUI
+    show_frame()  #Display 2
+    root.mainloop()  #Starts GUI

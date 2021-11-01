@@ -125,7 +125,6 @@ class BlobTracking():
             self.newLabelBlobs = {}  # Make a dict for the next blobs
 
             self.unusedLabels = self.labelBlobs.copy()
-            print(self.labelBlobs)
 
             # Loop all previous blobs
             for j, prevBlob in enumerate(self.labelBlobs):
