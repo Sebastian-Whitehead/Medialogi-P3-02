@@ -8,7 +8,7 @@ from connectedComponentsMethod import ConnectedComponentMethod
 
 def runLowerBarUI(squatTotal: int, setTotal: int):
     # Get video data
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     # Check if the camera is open on the users computer
     if not cap.isOpened():

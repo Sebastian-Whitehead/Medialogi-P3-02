@@ -6,8 +6,8 @@ import TonkoUI
 
 root = tk.Tk()
 
-nr_of_squats = tk.Entry(root)
-nr_of_sets = tk.Entry(root)
+target_squats = tk.Entry(root)
+target_sets = tk.Entry(root)
 
 
 def make_frame():
@@ -23,15 +23,15 @@ def labels():
     squats_label.config(font=('helvetica', 14))
     squats_label.grid(row=3, column=0)
 
-    nr_of_squats.grid(row=4, column=0)
+    target_squats.grid(row=4, column=0)
 
     sets_label = tk.Label(root, text='Input nr of sets you wish to do:')
     sets_label.config(font=('helvetica', 14))
     sets_label.grid(row=5, column=0)
 
-    nr_of_sets.grid(row=6, column=0)
+    target_sets.grid(row=6, column=0)
 
-    accept = tk.Button(text='OK!', command=lambda: squats(nr_of_squats, nr_of_sets), bg='blue', fg='white', width=10)
+    accept = tk.Button(text='OK!', command=lambda: squats(target_squats, target_sets), bg='blue', fg='white', width=10)
     accept.grid(row=7, column=0)
 
 def squats(nr_of_squats, nr_of_sets):
