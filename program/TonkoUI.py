@@ -6,12 +6,12 @@ from PIL import Image
 from PIL import ImageTk
 from connectedComponentsMethod import ConnectedComponentMethod
 
+
 # Connect to the camera selected
-# 0 = Internal computer camera
-# 1 = External connected camera
 def connectToCamera():
-    # Get video data
-    cap = cv2.VideoCapture(0)
+    # 0 = Internal computer camera
+    # 1 = External connected camera
+    cap = cv2.VideoCapture(0)  # Get video data
 
     # Check if the camera is open on the users computer
     if not cap.isOpened():
@@ -29,6 +29,7 @@ def connectToCamera():
 
     return cap
 
+
 # Make the main window
 def makeMainWindow():
     # Set up GUI
@@ -36,6 +37,7 @@ def makeMainWindow():
     window.wm_title('Training Assistant Computer - LAB')  # Set window title
     window.config(background="#FFFFFF")  # Set background color
     return window
+
 
 # Make window/frame for video feed
 def makeVideoWindow(window):
@@ -52,7 +54,6 @@ def makeVideoWindow(window):
 
 # Show the counter for amount of squats made
 def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount: int, setTotal: int):
-
     # Make image counter window
     imageCounterWindow = tk.Frame(window, width=600, height=100)
     imageCounterWindow.grid(row=50, column=0, padx=5, pady=5)
@@ -109,11 +110,11 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
         # Update UI
         if trackingMethod.blobTracking.calcSquat.addSquat:
             # Visualize squats
-            trackingMethod.blobTracking.calcSquat.addSquat = False # Return the "add squat" to False
+            trackingMethod.blobTracking.calcSquat.addSquat = False  # Return the "add squat" to False
 
             squatCount = trackingMethod.blobTracking.calcSquat.squatCount  # Get squats amount counted
             setCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
-            showSquatCountVisual(HUDWindow, squatCount, squatTotal, setCount, setTotal) # Update UI frame
+            showSquatCountVisual(HUDWindow, squatCount, squatTotal, setCount, setTotal)  # Update UI frame
 
         # Show image
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
