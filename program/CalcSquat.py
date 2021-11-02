@@ -7,10 +7,13 @@ class CalcSquat:
 
     def __init__(self, squatTotal, setTotal):
         self.blobData = dict()  # Make dict for holding squat data
+
         self.squatCount = 0  # Count how many squats the user have made
         self.setCount = 0 # Count how many sets the user have made
         self.squatTotal = squatTotal # Total target of squats
         self.setTotal = setTotal # Total target of sets
+        self.workoutComplete = False
+
         self.direction = True  # Flag holder for users current position
         self.position = (0, 0)  # Current (x,y) position
         self.addSquat = False # The program has added another squat (The UI has to use this information)
@@ -78,6 +81,14 @@ class CalcSquat:
                     self.addSquat = True
                     print('Squats:', self.squatCount)  # Print total counted squats
                     self.direction = True  # Set flag to Up / True
+
+                    # Set counter and squat count reset
+                    if self.squatCount >= self.squatTotal:
+                        self.setCount += 1
+                        self.squatCount = 0
+                        if self.setCount >= self.setTotal:
+                            self.setCount = 0
+                            self.workoutComplete = True
 
 if __name__ == '__main__':
     pass
