@@ -6,6 +6,7 @@ from PIL import Image
 from PIL import ImageTk
 from connectedComponentsMethod import ConnectedComponentMethod
 
+
 def runLowerBarUI(squatTotal: int, setTotal: int):
     # Get video data
     cap = cv2.VideoCapture(1)
@@ -34,11 +35,13 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
     imageFrame.grid(row=0, column=0, padx=10, pady=2)  # Grid for video window
 
     # Make video label
-    lmain = tk.Label(imageFrame) # Make label
+    lmain = tk.Label(imageFrame)  # Make label
     lmain.grid(row=0, column=0)  # Insert video label
 
     # Set the tracking method
-    trackingMethod = ConnectedComponentMethod(window_name=window.title(), squatTotal, setTotal)  # LAB method
+    trackingMethod = ConnectedComponentMethod(
+        window_name=window.title(),
+        squatTotal=squatTotal, setTotal=setTotal)  # LAB method
 
     # Make HUD window
     HUDWindow = tk.Frame(window, width=600, height=100)
@@ -53,11 +56,12 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
 
         # Tracking
         trackingMethod.runLABMasking(frame)  # Run tracking method
-        # (REMOVE COMMENT) squatCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
 
+        # Update UI
         if trackingMethod.blobTracking.calcSquat.addSquat:
             # Visualize squats
-            squatCount = trackingMethod.blobTracking.calcSquat.squatCount # Get squats amount counted
+            squatCount = trackingMethod.blobTracking.calcSquat.squatCount  # Get squats amount counted
+            squatCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
             showSquatCountVisual(HUDWindow, squatCount, squatTotal, 0, setTotal)
             trackingMethod.blobTracking.calcSquat.addSquat = False
 
@@ -77,8 +81,7 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
 
 
 # Show the counter for amount of squats made
-def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount:int, setTotal: int):
-
+def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount: int, setTotal: int):
     # Iterate total squats
     for i in range(squatTotal):
         # Turn all squats made ON
