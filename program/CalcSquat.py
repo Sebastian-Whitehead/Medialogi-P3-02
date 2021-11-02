@@ -9,17 +9,17 @@ class CalcSquat:
         self.blobData = dict()  # Make dict for holding squat data
 
         self.squatCount = 0  # Count how many squats the user have made
-        self.setCount = 0 # Count how many sets the user have made
-        self.squatTotal = squatTotal # Total target of squats
-        self.setTotal = setTotal # Total target of sets
+        self.setCount = 0  # Count how many sets the user have made
+        self.squatTotal = squatTotal  # Total target of squats
+        self.setTotal = setTotal  # Total target of sets
         self.workoutComplete = False
 
         self.direction = True  # Flag holder for users current position
-        self.position = (0, 0)  # Current (x,y) position
-        self.addSquat = False # The program has added another squat (The UI has to use this information)
+        self.position = (0, 0)  # Current (x, y) position
+        self.addSquat = False  # The program has added another squat (The UI has to use this information)
 
     def run(self, labelBlobs, media):
-        if self.squatCount < 2: self.getData(labelBlobs)  # Get calculate squat data (CalcSquat)
+        if self.squatCount + self.setCount < 1: self.getData(labelBlobs)  # Get calculate squat data (CalcSquat)
         self.countSquat(labelBlobs)  # Count each squat (CalcSquat)
         frameUI.drawData(media, self.blobData, self.direction)  # Draw the guide lines (CalcSquat)
 
@@ -36,22 +36,21 @@ class CalcSquat:
                 thisBlobData = self.blobData[label]  # Get current blob from data
                 # Compare current and new input. Use the min. and max.
                 thisBlobData['min'] = min(thisBlobData['min'], blob.y)
-                # thisBlobData['max'] = max(thisBlobData['max'], blob.y + blob.h) # (with height)
                 thisBlobData['max'] = max(thisBlobData['max'], blob.y)
+                # thisBlobData['max'] = max(thisBlobData['max'], blob.y + blob.h) # (with height)
                 self.blobData[label] = thisBlobData  # Save the blob data
             else:
                 self.blobData[label] = dict()  # Make dict for the blob
                 thisBlobData = self.blobData[label]
-                thisBlobData['min'] = blob.y  # Set the top of the blob to min
+                thisBlobData['min'] = thisBlobData['max'] = blob.y  # Set top and bottom
+                # thisBlobData['min'] = blob.y  # Set top
                 # thisBlobData['max'] = blob.y + blob.h  # Set the bottom of the blob to max (with height)
-                thisBlobData['max'] = blob.y  # Set the bottom of the blob to max
 
                 thisBlobData['minDistance'] = blob.h  # Min distance to count squat is the height of the head
 
-            #Divide by zero protection
+            # Divide by zero protection
             if not thisBlobData['min'] == 0:
                 thisBlobData['offset'] = int(thisBlobData['max'] / thisBlobData['min'] * 7)  # Min / max - ratio
-
 
     # Count the squat using the min. and max. thresholds
     def countSquat(self, blobLabels):
@@ -89,6 +88,7 @@ class CalcSquat:
                         if self.setCount >= self.setTotal:
                             self.setCount = 0
                             self.workoutComplete = True
+
 
 if __name__ == '__main__':
     pass

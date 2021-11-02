@@ -104,16 +104,16 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
         _, frame = cap.read()
         frame = cv2.flip(frame, 1)
 
-        # Tracking
         trackingMethod.runLABMasking(frame)  # Run tracking method
 
         # Update UI
         if trackingMethod.blobTracking.calcSquat.addSquat:
             # Visualize squats
+            trackingMethod.blobTracking.calcSquat.addSquat = False # Return the "add squat" to False
+
             squatCount = trackingMethod.blobTracking.calcSquat.squatCount  # Get squats amount counted
             setCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
-            showSquatCountVisual(HUDWindow, squatCount, squatTotal, setCount, setTotal)
-            trackingMethod.blobTracking.calcSquat.addSquat = False
+            showSquatCountVisual(HUDWindow, squatCount, squatTotal, setCount, setTotal) # Update UI frame
 
         # Show image
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
