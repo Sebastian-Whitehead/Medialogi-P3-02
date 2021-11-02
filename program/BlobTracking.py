@@ -64,7 +64,7 @@ class BlobTracking():
             pos = (int(media.shape[1] / 2), int(media.shape[0] / 2))
             text = 'Start in: ' + str(int((self.resetStartFrame - self.frameCount) / 30))  # Set the position of the text
             frameUI.writeText(media, text, pos, 1, 'center', (255, 255, 255))  # Write the text on the image
-            self.calcSquat.__init__()  # Reset calculating squat data
+            self.calcSquat.__init__(self.calcSquat.squatTotal, self.calcSquat.setTotal)  # Reset calculating squat data
             self.__setLabelsByPosition()  # Set labels on blobs
 
         return self.__writeLabel(media)  # Write the label on the screen

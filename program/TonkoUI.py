@@ -52,12 +52,9 @@ def makeVideoWindow(window):
 
 # Show the counter for amount of squats made
 def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount: int, setTotal: int):
-    # Make HUD window
-    HUDWindow = tk.Frame(window, width=600, height=100)
-    HUDWindow.grid(row=50, column=0, padx=5, pady=5)
 
     # Make image counter window
-    imageCounterWindow = tk.Frame(HUDWindow, width=600, height=100)
+    imageCounterWindow = tk.Frame(window, width=600, height=100)
     imageCounterWindow.grid(row=50, column=0, padx=5, pady=5)
 
     # Iterate total squats
@@ -75,7 +72,7 @@ def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount: int
         counterLabel.grid(row=0, column=i)  # Insert into window
 
     # Make text counter window
-    textCounterWindow = tk.Frame(HUDWindow, width=600, height=100)
+    textCounterWindow = tk.Frame(window, width=600, height=100)
     textCounterWindow.grid(row=51, column=0, padx=5, pady=5)
 
     # Write squats made and total onto window
@@ -90,8 +87,12 @@ def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount: int
 def runLowerBarUI(squatTotal: int, setTotal: int):
     window = makeMainWindow()
     lmain = makeVideoWindow(window)
-    showSquatCountVisual(window, 0, squatTotal, 0, setTotal)
     cap = connectToCamera()
+
+    # Make HUD window
+    HUDWindow = tk.Frame(window, width=600, height=100)
+    HUDWindow.grid(row=50, column=0, padx=5, pady=5)
+    showSquatCountVisual(HUDWindow, 0, squatTotal, 0, setTotal)
 
     # Set the tracking method
     trackingMethod = ConnectedComponentMethod(
@@ -110,8 +111,8 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
         if trackingMethod.blobTracking.calcSquat.addSquat:
             # Visualize squats
             squatCount = trackingMethod.blobTracking.calcSquat.squatCount  # Get squats amount counted
-            squatCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
-            showSquatCountVisual(window, squatCount, squatTotal, 0, setTotal)
+            setCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
+            showSquatCountVisual(HUDWindow, squatCount, squatTotal, setCount, setTotal)
             trackingMethod.blobTracking.calcSquat.addSquat = False
 
         # Show image
@@ -129,4 +130,4 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
 
 if __name__ == '__main__':
     # Capture and update video frames
-    runLowerBarUI(4, 10)
+    runLowerBarUI(3, 2)
