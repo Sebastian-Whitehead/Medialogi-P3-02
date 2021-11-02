@@ -38,11 +38,11 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
     lmain.grid(row=0, column=0)  # Insert video label
 
     # Set the tracking method
-    trackingMethod = ConnectedComponentMethod(window_name=window.title())  # LAB method
+    trackingMethod = ConnectedComponentMethod(window_name=window.title(), squatTotal, setTotal)  # LAB method
 
     # Make HUD window
     HUDWindow = tk.Frame(window, width=600, height=100)
-    HUDWindow.grid(row=600, column=0, padx=10, pady=2)
+    HUDWindow.grid(row=50, column=2, padx=5, pady=5)
 
     showSquatCountVisual(HUDWindow, 0, squatTotal, 0, setTotal)
 
@@ -53,7 +53,7 @@ def runLowerBarUI(squatTotal: int, setTotal: int):
 
         # Tracking
         trackingMethod.runLABMasking(frame)  # Run tracking method
-        #squatCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
+        # (REMOVE COMMENT) squatCount = trackingMethod.blobTracking.calcSquat.setCount  # Get sets amount counted
 
         if trackingMethod.blobTracking.calcSquat.addSquat:
             # Visualize squats
@@ -96,11 +96,11 @@ def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount:int,
 
     # Write squats made and total onto window
     writeSquats = tk.Label(window, text=f'Squats: {squatCount}/{squatTotal}')  # Make label
-    writeSquats.grid(row=1, column=0)  # Insert into window
+    writeSquats.grid(row=5, column=0)  # Insert into window
 
     # Write sets made and total onto window
     writeSquats = tk.Label(window, text=f'Sets: {setCount}/{setTotal}')  # Make label
-    writeSquats.grid(row=1, column=1)  # Insert into window
+    writeSquats.grid(row=5, column=1)  # Insert into window
 
 
 if __name__ == '__main__':

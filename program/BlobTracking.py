@@ -12,7 +12,7 @@ Call the 'run'-method each frame the program should track the blobs
 
 
 class BlobTracking():
-    def __init__(self, window_name: str, collisionType: str):
+    def __init__(self, window_name: str, collisionType: str, squatTotal: int, setTotal: int):
         super().__init__()
         # Constant variables changing the programs threshold manually
         self.resetTimer = 2  # Time it takes for timer to reset (const)
@@ -30,7 +30,7 @@ class BlobTracking():
         cv2.namedWindow(self.window_name)  # Get the window the tracking should be on
         cv2.setMouseCallback(self.window_name, self.__addLabel_event)  # Make a event clicker on the window
 
-        self.calcSquat = CalcSquat()  # Initialize a CalcSquat object
+        self.calcSquat = CalcSquat(squatTotal, setTotal)  # Initialize a CalcSquat object
         self.addBlobClick = 1  # Set button click to add blob labels to standard (1)
 
         self.frameCount = 0

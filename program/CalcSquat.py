@@ -5,12 +5,15 @@ import json, cv2, frameUI
 # Right now it only works with one blob (The hat)
 class CalcSquat:
 
-    def __init__(self):
+    def __init__(self, squatTotal, setTotal):
         self.blobData = dict()  # Make dict for holding squat data
         self.squatCount = 0  # Count how many squats the user have made
+        self.setCount = 0 # Count how many sets the user have made
+        self.squatTotal = squatTotal # Total target of squats
+        self.setTotal = setTotal # Total target of sets
         self.direction = True  # Flag holder for users current position
         self.position = (0, 0)  # Current (x,y) position
-        self.addSquat = False
+        self.addSquat = False # The program has added another squat (The UI has to use this information)
 
     def run(self, labelBlobs, media):
         if self.squatCount < 2: self.getData(labelBlobs)  # Get calculate squat data (CalcSquat)

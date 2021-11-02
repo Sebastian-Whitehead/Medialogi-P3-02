@@ -13,11 +13,13 @@ class Blob:
 
 
 class ConnectedComponentMethod:
-    def __init__(self, window_name):
+    def __init__(self, window_name, squatTotal, setTotal):
         self.window_name = window_name
         self.blobTracking = BlobTracking(
             window_name=window_name,
-            collisionType='dim'
+            collisionType='dim',
+            squatTotal=squatTotal,
+            setTotal=setTotal
         )
 
     def runManualMethod(self, originalImage: np.ndarray, lower: tuple, upper: tuple):
