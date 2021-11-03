@@ -11,21 +11,27 @@ def motion_detection():
     liney = 1  # set line for squat acceptance
     linecheck = 1  # check how deep the squat is on the first squat (calibration)
 
+    font = cv2.FONT_HERSHEY_SIMPLEX
+
     # Read frames
     cap = cv2.VideoCapture(0)
-    _, frame1 = frame2 = cap.read()
+    _, frame1 = _, frame2 = cap.read()
 
     while cap.isOpened():
-        cv2.putText(frame1, str(count), (10, 600), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.putText(frame1, str(count), (10, 600), font, 1, (255, 255, 255), 2) # Write amount of squats
+
         diff = cv2.absdiff(frame1, frame2)  # find difference between first frame and 2nd frame
         gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)  # easier to find contours in gray
         blur = cv2.GaussianBlur(gray, (5, 5), 0)  # blur to remove noise, this line might not matter for our purpose.
         _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)  # ignore black parts with thresholding
+
         # Dilates image, fill small holes. Three params (img, kernel, iterations)
-        dilated = cv2.dilate(thresh, None, iterations=7)
         # None in kernels, means default 3x3 matrix, iterations, doing it three times, so 7x7
+        dilated = cv2.dilate(thresh, None, iterations=7)
+
         # find contours er lidt mere kompleks og der kan man komme ud for kun at skulle forklare grass fire
         contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
         # cv2.line(frame1, start, end, (0, 0, 255), 2)  # draws the line which the persons head has to go under
 
         for contour in contours:
@@ -40,7 +46,6 @@ def motion_detection():
             right = (int(x + (w / 2) + 100), y)
             cv2.line(frame1, left, right, (0, 0, 255), 2)
             # cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)  # draw the rectangle
-            font = cv2.FONT_HERSHEY_SIMPLEX
             text = "status: {}".format("Movement")
             cv2.putText(frame1, text, (10, 50), font, 1, (255, 0, 0), 2)  # Text to show if we detect movement
 
