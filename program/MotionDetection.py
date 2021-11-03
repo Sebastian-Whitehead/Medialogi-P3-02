@@ -1,25 +1,30 @@
 import cv2
 import time
 
-def motion_detection(squatTotal: int, setTotal: int):
-    count = 0  # count squats
-    setCount = 0 # Count sets
-    direction = True
-    offset = 20
-    workoutComplete = False
+class motion_detection:
+    def __init__(self, squatTotal: int, setTotal: int, cap):
+        self.squatCount = 0  # squatCount squats
+        self.squatTotal = squatTotal
+        self.setCount = 0 # Count sets
+        self.setTotal = setTotal
+        self.direction = True
+        self.offset = 20
+        self.workoutComplete = False
+        self.addSquat = False
 
-    upperLine = lowerLine = None
+        self.upperLine = self.lowerLine = None
 
-    font = cv2.FONT_HERSHEY_SIMPLEX
+        self.font = cv2.FONT_HERSHEY_SIMPLEX
 
-    # Read frames
-    cap = cv2.VideoCapture(0)
-    _, frame1 = _, frame2 = cap.read()
+        self.cap = cap
 
-    while cap.isOpened():
-        cv2.putText(frame1, str(count), (10, 600), font, 1, (255, 255, 255), 2)  # Write amount of squats
+        _, self.frame1 = _, self.frame2 = self.cap.read()
 
-        diff = cv2.absdiff(frame1, frame2)  # find difference between first frame and 2nd frame
+    def run(self):
+
+        cv2.putText(self.frame1, str(self.squatCount), (10, 600), self.font, 1, (255, 255, 255), 2)  # Write amount of squats
+
+        diff = cv2.absdiff(self.frame1, self.frame2)  # find difference between first frame and 2nd frame
         gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)  # easier to find contours in gray
         blur = cv2.GaussianBlur(gray, (5, 5), 0)  # blur to remove noise, this line might not matter for our purpose.
         _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)  # ignore black parts with thresholding
@@ -44,65 +49,65 @@ def motion_detection(squatTotal: int, setTotal: int):
             # Draws line above users head
             left = (int(x + (w / 2) - 100), y)
             right = (int(x + (w / 2) + 100), y)
-            cv2.line(frame1, left, right, (0, 0, 255), 2)
-            # cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)  # draw the rectangle
+            cv2.line(self.frame1, left, right, (0, 0, 255), 2)
+            # cv2.rectangle(self.frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)  # draw the rectangle
             text = "status: {}".format("Movement")
-            cv2.putText(frame1, text, (10, 50), font, 1, (255, 0, 0), 2)  # Text to show if we detect movement
+            cv2.putText(self.frame1, text, (10, 50), self.font, 1, (255, 0, 0), 2)  # Text to show if we detect movement
 
             # Makes bottom line
-            if count < 1:
-                if upperLine is None: upperLine = y
-                if lowerLine is None: lowerLine = y
+            if self.squatCount < 1:
+                if self.upperLine is None: self.upperLine = y
+                if self.lowerLine is None: self.lowerLine = y
 
-                upperLine = min(upperLine, y)
-                lowerLine = max(lowerLine, y)
+                self.upperLine = min(self.upperLine, y)
+                self.lowerLine = max(self.lowerLine, y)
 
             # Checks if youre below the bottom line
-            if upperLine + 150 < lowerLine - offset:
-                if y > lowerLine - offset and direction == False:
-                    direction = True
-                    print(direction)
+            if self.upperLine + 150 < self.lowerLine - self.offset:
+                if y > self.lowerLine - self.offset and self.direction == False:
+                    self.direction = True
+                    print(self.direction)
 
                 # Checks if youre above the top line
-                if y < upperLine + offset and direction == True:
-                    direction = False
-                    count += 1
-                    print(f'{count}/{squatTotal}', f'{setCount}/{setTotal}')
+                if y < self.upperLine + self.offset and self.direction == True:
+                    self.direction = False
+                    self.squatCount += 1
+                    self.addSquat = True
+                    print(f'{self.squatCount}/{self.squatTotal}', f'{self.setCount}/{self.setTotal}')
 
-                    # Set counter and squat count reset
-                    if count >= squatTotal:
-                        setCount += 1
-                        count = 0
-                        if setCount >= setTotal:
-                            setCount = 0
-                            workoutComplete = True
-                            print(f'{workoutComplete=}')
+                    # Set squatCounter and squat squatCount reset
+                    if self.squatCount >= self.squatTotal:
+                        self.setCount += 1
+                        self.squatCount = 0
+                        if self.setCount >= self.setTotal:
+                            self.setCount = 0
+                            self.workoutComplete = True
+                            print(f'{self.workoutComplete=}')
 
         # Draw the upper line
-        if upperLine is not None:
-            start = (0, upperLine + offset)  # line1 start pos
-            end = (frame1.shape[1], upperLine + offset)  # line1 end pos
-            cv2.line(frame1, start, end, (255, 255, 0), 2)
+        if self.upperLine is not None:
+
+            start = (0, self.upperLine + self.offset)  # line1 start pos
+            end = (self.frame1.shape[1], self.upperLine + self.offset)  # line1 end pos
+            cv2.line(self.frame1, start, end, (255, 255, 0), 2)
 
         # Draw the lower line
-        if lowerLine is not None:
-            start = (0, lowerLine - offset)  # line1 start pos
-            end = (frame1.shape[1], lowerLine - offset)  # line1 end pos
-            cv2.line(frame1, start, end, (255, 255, 0), 2)
+        if self.lowerLine is not None:
+            start = (0, self.lowerLine - self.offset)  # line1 start pos
+            end = (self.frame1.shape[1], self.lowerLine - self.offset)  # line1 end pos
+            cv2.line(self.frame1, start, end, (255, 255, 0), 2)
 
-        #cv2.drawContours(frame1, contours, -1, (0, 255, 0))  # draws contours around moving object
+        #cv2.drawContours(self.frame1, contours, -1, (0, 255, 0))  # draws contours around moving object
 
-        cv2.imshow('feed', frame1)  # show the frame
+        #cv2.imshow('feed', self.frame1)  # show the frame
+        returnFrame = self.frame1.copy()
 
-        frame1 = frame2
+        self.frame1 = self.frame2
         # frame will get the next frame in the video (via "cap").
         # "Ret" will obtain return value from getting the video frame.
-        _, frame2 = cap.read()
+        _, self.frame2 = self.cap.read()
 
-        if cv2.waitKey(15) == ord('q'): break
-
-    cap.release()
-    cv2.destroyAllWindows()
+        return returnFrame
 
 if __name__ == '__main__':
     """
@@ -110,4 +115,4 @@ if __name__ == '__main__':
         time.sleep(1)
         print(f'Start in {i}')
     """
-    motion_detection(5, 2)
+    motion_detection(5, 2).run(cv2.VideoCapture(0))
