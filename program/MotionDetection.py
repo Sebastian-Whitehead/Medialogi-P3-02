@@ -7,11 +7,11 @@ clip = cv2.VideoCapture(0)
 def motion_detection(cap):
     count = 0  # count squats
     direction = True
-    flag = 0
     start = (0, 307)  # line start pos
     end = (360, 307)  # line end pos
     liney = 1 #set line for squat acceptance
     linecheck = 1 #check how deep the squat is on the first squat (calibration)
+
 
     ret, frame1 = cap.read()
     ret, frame2 = cap.read()
@@ -35,10 +35,11 @@ def motion_detection(cap):
             #Draws line above users head
             left = (int(x+(w/2)-100), y)
             right = (int(x+(w/2)+100), y)
-            cv2.line(frame1, left, right, (0, 255, 0), 2)
+            cv2.line(frame1, left, right, (0, 0, 255), 2)
             #cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)  # draw the rectangle
             cv2.putText(frame1, "status: {}".format("Movement"), (10, 50), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (255, 0, 0), 2)  # Text to show if we detect movement
+
 
 
             # Makes bottom line
@@ -48,13 +49,15 @@ def motion_detection(cap):
                 start1 = (0, liney)  # line1 start pos
                 end1 = (frame1.shape[1], liney)  # line1 end pos
 
+
+
             #Checks if youre below the bottom line
             if y > liney and direction == False:
                 direction = True
                 print(direction)
 
             #Checks if youre above the top line
-            if y < liney and direction == True:
+            if y < upper and direction == True:
                 direction = False
                 count += 1
                 print(count)
@@ -63,6 +66,8 @@ def motion_detection(cap):
         #Draws bottom line
         if "start1" and "end1" in locals():
             cv2.line(frame1, start1, end1, (255, 255, 0), 2)  # draws the line which the persons head has to go under
+
+
 
 
         cv2.drawContours(frame1, contours, -1, (0, 255, 0), 2) # draws contours around moving object
