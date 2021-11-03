@@ -1,14 +1,50 @@
 import cv2
 import time
+import numpy as np
 
-def motion_detection(squatTotal: int, setTotal: int):
+class Blob:
+    def __init__(self, x: int, y: int, w: int, h: int):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
+def checkOverLap(obj1, obj2, threshold: int) -> bool:
+    if obj1.x - threshold < obj2.x + obj2.w + threshold:
+        if obj1.x + obj1.w + threshold > obj2.x - threshold:
+            if obj1.y - threshold < obj2.y + obj2.h + threshold:
+                if obj1.h + obj1.y + threshold > obj2.y - threshold:
+                    return True
+    return False
+
+
+def mergeBlobs(blobs, threshold: int):
+    #blobs = list(set(blobs))
+    for blob1 in list(blobs):
+        for blob2 in list(blobs):
+            if blob1 is not blob2:
+                if checkOverLap(blob1, blob2, threshold):
+                    if blob1 in blobs: blobs.remove(blob1)
+                    if blob2 in blobs: blobs.remove(blob2)
+
+                    x = min(blob1.x, blob2.x)
+                    y = min(blob1.y, blob2.y)
+                    w = max(blob1.w, blob2.w)
+                    h = max(blob1.h, blob2.h)
+                    blobs.append(Blob(x, y, w, h))
+    return blobs
+
+def motion_detection():
     count = 0  # count squats
-    setCount = 0 # Count sets
     direction = True
     offset = 20
-    workoutComplete = False
+    start = (0, 307)  # line start pos
+    end = (360, 307)  # line end pos
+    liney = 1  # set line for squat acceptance
+    linecheck = 1  # check how deep the squat is on the first squat (calibration)
 
-    upperLine = lowerLine = None
+    upperLine = None
+    lowerLine = None
 
     font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -32,19 +68,31 @@ def motion_detection(squatTotal: int, setTotal: int):
         # find contours er lidt mere kompleks og der kan man komme ud for kun at skulle forklare grass fire
         contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
+        blobs = []
         for contour in contours:
             # save all coordinates of found contours
             (x, y, w, h) = cv2.boundingRect(contour)
+            #print(contour, end='-> \n\n')
+            if 150 < w and 150 < h:
+                blobs.append(Blob(x, y, w, h))
 
-            # if area is less than, then do nothing #6000ish if video, 16000 ish if webcam.
-            # Jo tættere på man er på kameraet jo større skal det tal være. IKKE?
-            if cv2.contourArea(contour) < 11000: continue # Continue if there is not enough area
-            # if 150 > w and 150 > h: continue # Continue if the contour is too small
+        mergeBlobs(blobs, 5)
+
+        for blob in blobs:
+            x, y, w, h = blob.x, blob.y, blob.w, blob.h
+
+            pos1 = (x, y)
+            pos2 = (x + w, y + h)
+            cv2.rectangle(frame1, pos1, pos2, (0, 0, 200), 1)
+
+            left = (int(x + (w / 2) - 100), y)
+            right = (int(x + (w / 2) + 100), y)
+            cv2.line(frame1, left, right, (0, 0, 100), 2)
 
             # Draws line above users head
             left = (int(x + (w / 2) - 100), y)
             right = (int(x + (w / 2) + 100), y)
-            cv2.line(frame1, left, right, (0, 0, 255), 2)
+            #cv2.line(frame1, left, right, (0, 0, 255), 2)
             # cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)  # draw the rectangle
             text = "status: {}".format("Movement")
             cv2.putText(frame1, text, (10, 50), font, 1, (255, 0, 0), 2)  # Text to show if we detect movement
@@ -57,8 +105,12 @@ def motion_detection(squatTotal: int, setTotal: int):
                 upperLine = min(upperLine, y)
                 lowerLine = max(lowerLine, y)
 
+                #linecheck = y  # make linecheck same as y
+                #liney = y - 20  # set the line a less than y,
+
             # Checks if youre below the bottom line
             if upperLine + 150 < lowerLine - offset:
+                #print('Approved')
                 if y > lowerLine - offset and direction == False:
                     direction = True
                     print(direction)
@@ -67,24 +119,17 @@ def motion_detection(squatTotal: int, setTotal: int):
                 if y < upperLine + offset and direction == True:
                     direction = False
                     count += 1
-                    print(f'{count}/{squatTotal}', f'{setCount}/{setTotal}')
+                    print(count)
 
-                    # Set counter and squat count reset
-                    if count >= squatTotal:
-                        setCount += 1
-                        count = 0
-                        if setCount >= setTotal:
-                            setCount = 0
-                            workoutComplete = True
-                            print(f'{workoutComplete=}')
-
+        # Draws bottom line
+        # draws the line which the persons head has to go under
+        
         # Draw the upper line
         if upperLine is not None:
             start = (0, upperLine + offset)  # line1 start pos
             end = (frame1.shape[1], upperLine + offset)  # line1 end pos
             cv2.line(frame1, start, end, (255, 255, 0), 2)
 
-        # Draw the lower line
         if lowerLine is not None:
             start = (0, lowerLine - offset)  # line1 start pos
             end = (frame1.shape[1], lowerLine - offset)  # line1 end pos
@@ -93,6 +138,7 @@ def motion_detection(squatTotal: int, setTotal: int):
         #cv2.drawContours(frame1, contours, -1, (0, 255, 0))  # draws contours around moving object
 
         cv2.imshow('feed', frame1)  # show the frame
+        # cv2.imshow('dil', dilated)
 
         frame1 = frame2
         # frame will get the next frame in the video (via "cap").
@@ -104,10 +150,11 @@ def motion_detection(squatTotal: int, setTotal: int):
     cap.release()
     cv2.destroyAllWindows()
 
+
 if __name__ == '__main__':
     """
     for i in range(5, 0, -1):
         time.sleep(1)
         print(f'Start in {i}')
     """
-    motion_detection(5, 2)
+    motion_detection()
