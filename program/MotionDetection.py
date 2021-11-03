@@ -29,7 +29,7 @@ def motion_detection(cap):
         for contour in contours:
             # save all coordinates of found contours
             (x, y, w, h) = cv2.boundingRect(contour)
-            if cv2.contourArea(contour) < 17000:  # if area is less than, then do nothing #6000ish if video, 16000 ish if webcam.
+            if cv2.contourArea(contour) < 21000:  # if area is less than, then do nothing #6000ish if video, 16000 ish if webcam.
                 #Jo tættere på man er på kameraet jo større skal det tal være. IKKE?
                 continue
             #Draws line above users head
@@ -37,9 +37,7 @@ def motion_detection(cap):
             right = (int(x+(w/2)+100), y)
             cv2.line(frame1, left, right, (0, 255, 0), 2)
             #cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 0), 2)  # draw the rectangle
-            cv2.putText(frame1, "status: {}".format("Movement"), (10, 50), cv2.FONT_HERSHEY_SIMPLEX,
-                        1, (255, 0, 0), 2)  # Text to show if we detect movement
-
+            cv2.putText(frame1, "status: {}".format("Movement"), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)  # Text to show if we detect movement
 
             # Makes bottom line
             if y > linecheck and count == 0:
@@ -83,7 +81,7 @@ def motion_detection(cap):
 
 
 
-#for i in range(5, 0, -1):
- #   time.sleep(1)
-  #  print(i)
+for i in range(5, 0, -1):
+    time.sleep(1)
+    print(i)
 motion_detection(clip)
