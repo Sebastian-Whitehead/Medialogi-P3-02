@@ -66,6 +66,49 @@ class ConnectedComponentMethod:
             pos2 = (blob.x + blob.w, blob.y)
             originalImage = cv2.line(originalImage, pos1, pos2, (0, 0, 255))
 
+        self.blobTracking.rManual(originalImage, lower, upper)
+        return self.__continueMethod(originalImage, processedImage)
+
+    def runLABMasking(self, originalImage: np.ndarray):
+        processedImage = colorMaskLAB(originalImage)
+        return self.__continueMethod(originalImage, processedImage)
+
+    def runBoth(self, originalImage: np.ndarray, lower: tuple, upper: tuple):
+        processedImage1 = colorMaskLAB(originalImage)
+        processedImage2 = colorMaskManual(originalImage, lower, upper)
+        merged = cv2.addWeighted(processedImage1, 1, processedImage2, 1, 0)
+        cv2.imshow('Merged', merged)
+        return self.__continueMethod(originalImage, merged)
+
+    def __continueMethod(self, originalImage: np.ndarray, processedImage: np.ndarray):
+
+        imageH, imageW, _ = originalImage.shape
+
+        num_labels, labels = cv2.connectedComponents(processedImage)
+
+        blobs = []
+        for n in range(1, num_labels):
+            nonZeroX, nonZeroY = np.where(labels[:, :] == n)
+
+            x, y = min(nonZeroY), min(nonZeroX)
+            w, h = max(nonZeroY) - x, max(nonZeroX) - y
+
+            # Filter small blobs
+            if 1 < w and 1 < h:
+                blobs.append(Blob(x, y, w, h))
+            if False:
+                frameUI.writeText(originalImage, 'Looking for green hat,', [imageW / 2, imageH / 2 - 25], 1.5, 'center', (255, 255, 255))
+                frameUI.writeText(originalImage, 'please, stand still..', [imageW / 2, imageH / 2 + 25], 1.5, 'center', (255, 255, 255))
+
+        blobs = mergeBlobs(blobs, 5)
+
+        for blob in blobs:
+            pos1, pos2 = (blob.x, blob.y), (blob.x + blob.w, blob.y + blob.h)
+            #originalImage = cv2.rectangle(originalImage, pos1, pos2, (0, 0, 255), 1) # Draw border on blobs
+
+            pos2 = (blob.x + blob.w, blob.y)
+            originalImage = cv2.line(originalImage, pos1, pos2, (0, 0, 255))
+
         self.blobTracking.run(blobs, originalImage)
 
         # cv2.imshow('ConnectedComponents', originalImage)
