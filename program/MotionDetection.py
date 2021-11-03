@@ -55,7 +55,7 @@ def motion_detection(cap):
                 print(direction)
 
             #Checks if youre above the top line
-            if y < upper and direction == True:
+            if y < liney and direction == True:
                 direction = False
                 count += 1
                 print(count)
