@@ -1,4 +1,4 @@
-import json, cv2, frameUI
+import frameUI
 
 
 # Class for calculating and counting a squat with different blobs

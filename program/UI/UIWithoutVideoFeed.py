@@ -1,4 +1,6 @@
 import tkinter as tk
+import sys
+sys.path.append('UI')
 import TonkoUI
 
 

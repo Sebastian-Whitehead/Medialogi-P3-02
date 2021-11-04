@@ -1,5 +1,4 @@
-import cv2, frameUI
-import numpy as np
+import frameUI
 from ColorMask import *
 from BlobTracking import BlobTracking
 

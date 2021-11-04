@@ -4,6 +4,8 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image
 from PIL import ImageTk
+import sys
+sys.path.append('Process')
 from connectedComponentsMethod import ConnectedComponentMethod
 
 
@@ -61,10 +63,10 @@ def showSquatCountVisual(window, squatCount: int, squatTotal: int, setCount: int
     # Iterate total squats
     for i in range(squatTotal):
         # Turn all squats made ON
-        if i < squatCount:
-            counterImage = Image.open('TestImages/counterOn.png')
-        else:
-            counterImage = Image.open('TestImages/counterOff.png')
+        counterImagePath = 'TestImages/counterOff.png'
+        if i < squatCount: 'TestImages/counterOn.png'
+        if __name__ == '__main__': counterImagePath = '../' + counterImagePath
+        counterImage = Image.open(counterImagePath)
         counterImage = ImageTk.PhotoImage(counterImage)  # Get image from folder
 
         # Make label for counter image
