@@ -86,7 +86,6 @@ class motion_detection:
 
         # Draw the upper line
         if self.upperLine is not None:
-
             start = (0, self.upperLine + self.offset)  # line1 start pos
             end = (self.frame1.shape[1], self.upperLine + self.offset)  # line1 end pos
             cv2.line(self.frame1, start, end, (255, 255, 0), 2)
@@ -99,7 +98,6 @@ class motion_detection:
 
         #cv2.drawContours(self.frame1, contours, -1, (0, 255, 0))  # draws contours around moving object
 
-        #cv2.imshow('feed', self.frame1)  # show the frame
         returnFrame = self.frame1.copy()
 
         self.frame1 = self.frame2
@@ -115,4 +113,8 @@ if __name__ == '__main__':
         time.sleep(1)
         print(f'Start in {i}')
     """
-    motion_detection(5, 2).run(cv2.VideoCapture(0))
+    md = motion_detection(5, 2, cv2.VideoCapture(0, cv2.CAP_DSHOW))
+    while True:
+        cv2.imshow('feed', md.run())  # show the framerun()
+        # Press Q on keyboard to  exit
+        if cv2.waitKey(30) & 0xFF == ord('q'): break

@@ -1,5 +1,9 @@
 import UIWithoutVideoFeed
 
+# TODO:
+#  Visuel tælling af diamantor virker ikke
+#
+
 
 # Main function running the live video from standard camera in users computer
 # Running image processing and movement and/or color detection.
