@@ -22,6 +22,7 @@ class motion_detection:
         _, self.frame1 = _, self.frame2 = self.cap.read()
 
     #Selfmade dilation
+<<<<<<< Updated upstream
     def DilSelf(self, img, kernel, iterations): #Give image, kernel size, number of iterations
         mid = int((kernel/2))   #How far away from the center it should look
         for i in range(iterations):  #Repeats the loop i amount of times
@@ -46,6 +47,32 @@ class motion_detection:
             for x, pixels in enumerate(row):
                 image[y][x] = (int(img[y][x][0]) + int(img[y][x][1]) + int(img[y][x][2]))/3.0  #Avg from RBG will be the colour
         return image
+=======
+    def DilSelf(self, img, kernel, iterations): #Gives image, kernel size, number of iterations
+        mid = int((kernel/2))
+        #print(type(img))
+        for i in range(iterations):
+            print(i)
+            for x, row in enumerate(img):
+                for y, pixel in enumerate(row):
+                    for x_step in range(kernel):
+                        x_check = x + (x_step - mid)
+                        #print(type(img))
+                        #print(img.size[1])
+                        if x_check < 0 or x_check >= img.shape[1]:  # if current x is outside the image
+                            continue
+                        for y_step in range(kernel):
+                            y_check = y + (y_step - mid)
+                            #print(y_check)
+                            if y_check < 0 or y_check >= img.shape[0]:  # if current y is outside the image
+                                #print(y_check)
+                                continue
+                            if img[y_check, x_check] > 20:  # if any part of our kernel hits
+                                img[y, x] = 255
+                        #print(x,y)
+        return img
+
+>>>>>>> Stashed changes
 
     def run(self):
 
@@ -60,11 +87,19 @@ class motion_detection:
 
         # Dilates image, fill small holes. Three params (img, kernel, iterations)
         # None in kernels, means default 3x3 matrix, iterations, doing it three times, so 7x7
+<<<<<<< Updated upstream
         dilated = cv2.dilate(thresh, None, iterations=7)
         #dilated = self.DilSelf(thresh, 3, 1) Selfmade dilation function
         cv2.imshow('dil', dilated)
         #cv2.waitKey(0)
         print(type(dilated))
+=======
+        #dilated = cv2.dilate(thresh, None, iterations=7)
+        dilated = self.DilSelf(thresh, 3, 1)
+        cv2.imshow('dil', dilated)
+        #cv2.waitKey(0)
+
+>>>>>>> Stashed changes
         # find contours er lidt mere kompleks og der kan man komme ud for kun at skulle forklare grass fire
         contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -144,8 +179,12 @@ if __name__ == '__main__':
         time.sleep(1)
         print(f'Start in {i}')
     """
+<<<<<<< Updated upstream
     md = motion_detection(5, 2, cv2.VideoCapture(0, cv2.CAP_DSHOW))
     while True:
         cv2.imshow('feed', md.run())  # show the framerun()
         # Press Q on keyboard to  exit
         if cv2.waitKey(30) & 0xFF == ord('q'): break
+=======
+    motion_detection(5, 2, cv2.VideoCapture(0, cv2.CAP_DSHOW)).run()
+>>>>>>> Stashed changes
