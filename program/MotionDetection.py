@@ -1,5 +1,6 @@
 import cv2
 import time
+import numpy as np
 
 class motion_detection:
     def __init__(self, squatTotal: int, setTotal: int, cap):
@@ -20,20 +21,50 @@ class motion_detection:
 
         _, self.frame1 = _, self.frame2 = self.cap.read()
 
+    #Selfmade dilation
+    def DilSelf(self, img, kernel, iterations): #Give image, kernel size, number of iterations
+        mid = int((kernel/2))   #How far away from the center it should look
+        for i in range(iterations):  #Repeats the loop i amount of times
+            for y, row in enumerate(img):
+                for x, pixel in enumerate(row):
+                    for x_step in range(kernel):  # Will times x kernel size.
+                        x_check = x + (x_step - mid)   # Goes from -1, to 0, to 1 + x
+                        if x_check < 0 or x_check >= img.shape[1]:  # if current x is outside the image
+                            continue
+                        for y_step in range(kernel):
+                            y_check = y + (y_step - mid)  # Goes from -1, to 0, to 1 + y
+                            if y_check < 0 or y_check >= img.shape[0]:  # if current y is outside the image
+                                continue
+                            if img[y_check, x_check] > 20:  # if any part of our kernel hits
+                                img[y, x] = 255   # if the kernel hits, set the pixel to white 
+        return img
+
+    #Selfmade grayscale function
+    def grayself(self, img):
+        image = np.empty((img.shape[0], img.shape[1]), dtype=int) #Make an empty array with the correct size
+        for y, row in enumerate(img):
+            for x, pixels in enumerate(row):
+                image[y][x] = (int(img[y][x][0]) + int(img[y][x][1]) + int(img[y][x][2]))/3.0  #Avg from RBG will be the colour
+        return image
+
     def run(self):
 
         cv2.putText(self.frame1, str(self.squatCount), (10, 600), self.font, 1, (255, 255, 255), 2)  # Write amount of squats
 
         diff = cv2.absdiff(self.frame1, self.frame2)  # find difference between first frame and 2nd frame
         gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)  # easier to find contours in gray
+        #gray = self.grayself(diff)  Selfmade grayscale function - is slow
+        #gray = gray.astype('uint8')  Changes dtype for selfmade grayscale function, required for the prog to run
         blur = cv2.GaussianBlur(gray, (5, 5), 0)  # blur to remove noise, this line might not matter for our purpose.
         _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)  # ignore black parts with thresholding
 
         # Dilates image, fill small holes. Three params (img, kernel, iterations)
         # None in kernels, means default 3x3 matrix, iterations, doing it three times, so 7x7
         dilated = cv2.dilate(thresh, None, iterations=7)
+        #dilated = self.DilSelf(thresh, 3, 1) Selfmade dilation function
         cv2.imshow('dil', dilated)
-
+        #cv2.waitKey(0)
+        print(type(dilated))
         # find contours er lidt mere kompleks og der kan man komme ud for kun at skulle forklare grass fire
         contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
