@@ -24,7 +24,7 @@ Green hat program: Make sure the green hat is the highest found object doing the
 Additional features
 - The "r"-key will force the program to skip the current set
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - -
 
 This program has been developed as an university project at Aalborg University, trying to solve the problem statement:
 "How can we make a training assistant program which counts a given exercise the user has performed, with minimal equipment requirements using computer vision?"
