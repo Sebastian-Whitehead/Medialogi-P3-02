@@ -1,10 +1,13 @@
 # Medialogi-P3-02
 Utilizing visual processing to count user squat repetitions, from a live video feed
+
 3rd semester Medialogy, group 2 (P3)
 Aalborg Universirty, Spring 2021
 
 The program consist of two detection methods, which can count a person doing squats.
 First method tracks movement in the frame, and the second methods tracks a light green hat.
+
+- - -
 
 Requirements
 - One light green hat
@@ -37,7 +40,7 @@ The program has been developed in Python using following libraries:
 - NumPy (https://numpy.org)
 - keyboard (https://pypi.org/project/keyboard/)
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - -
 
 Group members
 - Charlotte Johansen
