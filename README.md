@@ -6,13 +6,12 @@ Aalborg Universirty, Spring 2021
 The program consist of two detection methods, which can count a person doing squats.
 First method tracks movement in the frame, and the second methods tracks a light green hat.
 
-Requirement:
+Requirements
 - One light green hat
-- One camera
-- - Internal computer webcamera or external computer plugable camera
+- One camera (Internal computer or external computer plugable)
 
-Open:
-1. Run main.py using Python.
+Start program
+1. Run "main.py" using Python.
 2. Pick which detection method to use.
 3. Input the number of desired squats and sets this session should consist of.
 4. Press the "Spacebar"-key to start the countdown and calibration of the program.
@@ -21,6 +20,9 @@ Green hat program: Make sure the green hat is the highest found object doing the
 6. First squat is a calibration squat, setting the top and lower line at the higehst and lowest point.
 7. Reach under the lower line, and above the upper line, when doing each squat.
 8. When the target squat and sets has been reached, the program will continue to the main screen (Step 2).
+
+Additional features
+- The "r"-key will force the program to skip the current set
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -35,12 +37,14 @@ The program has been developed in Python using following libraries:
 - NumPy (https://numpy.org)
 - keyboard (https://pypi.org/project/keyboard/)
 
-
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-Group members:
+Group members
 - Charlotte Johansen
 - Rebecca Ryø Hansen
 - Sebastian Whitehead
 - Tobias Niebuhr Kiholm
 - Tonko Emil Westerhof Bossen
+
+Supervisor
+- Mark Philip Philipsen
