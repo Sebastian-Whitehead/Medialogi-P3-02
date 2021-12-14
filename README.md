@@ -1,6 +1,4 @@
-# Medialogi-P3-02
-Utilizing visual processing to count user squat repetitions, from a live video feed
-
+# Utilizing visual processing to count user squat repetitions, from a live video feed
 3rd semester Medialogy, group 2 (P3)
 Aalborg Universirty, Spring 2021
 
