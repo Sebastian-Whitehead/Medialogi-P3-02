@@ -1,6 +1,6 @@
 # Utilizing visual processing to count user squat repetitions, from a live video feed
 3rd semester Medialogy, group 2 (P3)
-Aalborg Universirty, Spring 2021
+Aalborg Universirty, Fall 2021
 
 # About 
 The program consist of two detection methods, which can count a person doing squats.
