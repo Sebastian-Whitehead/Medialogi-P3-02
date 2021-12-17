@@ -1,4 +1,4 @@
-from softwareProgram import StartScreen
+import StartScreen
 
 # Main function running the live video from standard camera in users computer
 # Running image processing and movement and/or color detection.
